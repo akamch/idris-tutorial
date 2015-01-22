@@ -355,7 +355,7 @@ quux = False</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>An <span class="logo">Idris</span> file consists of an optional module declaration (here <code>module prims</code>) followed by an optional list of imports (none here, however <span class="logo">Idris</span> programs can consist of several modules, and the definitions in each module each have their own namespace, as we will discuss in Section <a href="#sect:namespaces">Modules and Namespaces</a>) and a collection of declarations and definitions.
+<p>An <span class="logo">Idris</span> file consists of an optional module declaration (here <code>module prims</code>) followed by an optional list of imports (none here, however <span class="logo">Idris</span> programs can consist of several modules, and the definitions in each module each have their own namespace, as we will discuss in <a href="#sect:namespaces">Modules and Namespaces</a>) and a collection of declarations and definitions.
 The order of definitions is significant — functions and data types must be defined before use.
 Each definition must have a type declaration, for example see <code>x : Int</code>, <code>foo : String</code>, from the above listing.
 Indentation is significant — a new declaration begins at the same level of indentation as the preceding declaration.
@@ -377,7 +377,7 @@ True : Bool</pre>
 </div>
 <div class="paragraph">
 <p>All of the usual arithmetic and comparison operators are defined for the primitive types.
-They are overloaded using type classes, as we will discuss in Section <a href="#sec:classes">Type Classes</a> and can be extended to work on user defined types.
+They are overloaded using type classes, as we will discuss in <a href="#sec:classes">Type Classes</a> and can be extended to work on user defined types.
 Boolean expressions can be tested with the <code>if...then...else</code> construct:</p>
 </div>
 <div class="listingblock">
@@ -589,7 +589,7 @@ In the type of <code>::</code>, we state explicitly that an element of type <cod
 <div class="paragraph">
 <p>We can define functions on dependent types such as <code>Vect</code> in the same way as on simple types such as <code>List</code> and <code>Nat</code> above, by pattern matching.
 The type of a function over <code>Vect</code> will describe what happens to the lengths of the vectors involved.
-For example, <code>++</code>, defined as follows, appends two `Vect`s:</p>
+For example, <code>++</code>, defined as follows, appends two <code>Vects</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -938,7 +938,7 @@ data Vect : Nat -&gt; Type -&gt; Type where
 </div>
 </div>
 <div class="paragraph">
-<p>Note that the constructor names are the same for each — constructor names (in fact, names in general) can be overloaded, provided that they are declared in different namespaces (see Section [sect:namespaces]), and will typically be resolved according to their type.
+<p>Note that the constructor names are the same for each — constructor names (in fact, names in general) can be overloaded, provided that they are declared in different namespaces (see <a href="#sect:namespaces">Modules and Namespaces</a>), and will typically be resolved according to their type.
 As syntactic sugar, any type with the constructor names <code>Nil</code> and <code>::</code> can be written in list form.
 For example:</p>
 </div>
@@ -1597,7 +1597,7 @@ class Functor f =&gt; Applicative (f : Type -&gt; Type) where
 <div class="sect2">
 <h3 id="sec:monad">Monads and <code>do</code>-notation</h3>
 <div class="paragraph">
-<p>The <code>Monad</code> class allows us to encapsulate binding and computation, and is the basis of <code>do</code>-notation introduced in Section <a href="#sect:do"><code>“do”</code> notation</a>.
+<p>The <code>Monad</code> class allows us to encapsulate binding and computation, and is the basis of <code>do</code>-notation introduced in <a href="#sect:do"><code>“do”</code> notation</a>.
 It extends <code>Applicative</code> as defined above, and is defined as follows:</p>
 </div>
 <div class="listingblock">
@@ -1634,7 +1634,7 @@ We can also define an instance for <code>Maybe</code>, as follows:</p>
 </div>
 </div>
 <div class="paragraph">
-<p>Using this we can, for example, define a function which adds two `Maybe Int`s, using the monad to encapsulate the error handling:</p>
+<p>Using this we can, for example, define a function which adds two <code>Maybe Ints</code>, using the monad to encapsulate the error handling:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1705,7 +1705,7 @@ In practice, <code>!</code>-notation allows us to program in a more direct style
 <div class="sect3">
 <h4 id="monad-comprehensions">Monad comprehensions</h4>
 <div class="paragraph">
-<p>The list comprehension notation we saw in Section <a href="#sec:listcomp">List comprehensions</a> is more general, and applies to anything which is an instance of both <code>Monad</code> and <code>Alternative</code>:</p>
+<p>The list comprehension notation we saw in <a href="#sec:listcomp">List comprehensions</a> is more general, and applies to anything which is an instance of both <code>Monad</code> and <code>Alternative</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1820,7 +1820,7 @@ McBride and Paterson describe such an evaluator <a href="#idioms">[idioms]</a>, 
 </div>
 </div>
 <div class="paragraph">
-<p>Evaluation will take place relative to a context mapping variables (represented as <code>String</code> s) to integer values, and can possibly fail.
+<p>Evaluation will take place relative to a context mapping variables (represented as <code>Strings</code>) to integer values, and can possibly fail.
 We define a data type <code>Eval</code> to wrap an evaluator:</p>
 </div>
 <div class="listingblock">
@@ -1897,7 +1897,7 @@ To achieve this, instances can be as follows:</p>
 <div class="paragraph">
 <p>This declares an instance as normal, but with an explicit name, <code>myord</code>.
 The syntax <code>compare @{myord}</code> gives an explicit instance to <code>compare</code>, otherwise it would use the default instance for <code>Nat</code>.
-We can use this, for example, to sort a list of `Nat`s in reverse.
+We can use this, for example, to sort a list of <code>Nats</code> in reverse.
 Given the following list:</p>
 </div>
 <div class="listingblock">
@@ -2264,8 +2264,8 @@ This is defined as follows:</p>
 </div>
 </div>
 <div class="paragraph">
-<p>We can treat <em>Stop</em> as a proof that the most recently defined variable is well-typed, and <em>Pop n</em> as a proof that, if the <code>n`th most recently defined variable is well-typed, so is the `n+1`th.
-In practice, this means we use `Stop</code> to refer to the most recently defined variable, <code>Pop Stop</code> to refer to the next, and so on, via the <code>Var</code> constructor:</p>
+<p>We can treat <em>Stop</em> as a proof that the most recently defined variable is well-typed, and <em>Pop n</em> as a proof that, if the <code>n</code>-th most recently defined variable is well-typed, so is the <code>n+1</code>-th.
+In practice, this means we use <code>Stop</code> to refer to the most recently defined variable, <code>Pop Stop</code> to refer to the next, and so on, via the <code>Var</code> constructor:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2538,8 +2538,8 @@ Effectively, it adds this value as an extra argument, which we place after the v
 <div class="paragraph">
 <p>If the intermediate computation itself has a dependent type, then the result can affect the forms of other arguments — we can learn the form of one value by testing another.
 For example, a <code>Nat</code> is either even or odd.
-If it’s even it will be the sum of two equal `Nat`s.
-Otherwise, it is the sum of two equal `Nat`s plus one:</p>
+If it’s even it will be the sum of two equal <code>Nats</code>.
+Otherwise, it is the sum of two equal <code>Nats</code> plus one:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2572,11 +2572,11 @@ natToBin k with (parity k)
 </div>
 <div class="paragraph">
 <p>The value of the result of <code>parity k</code> affects the form of <code>k</code>, because the result of <code>parity k</code> depends on <code>k</code>.
-So, as well as the patterns for the result of the intermediate computation (<code>Even</code> and <code>odd</code>) right of the <code>\mid</code>, we also write how the results affect the other patterns left of the \($\mid$\).
+So, as well as the patterns for the result of the intermediate computation (<code>Even</code> and <code>odd</code>) right of the \(\mid\), we also write how the results affect the other patterns left of the \(\mid\).
 Note that there is a function in the patterns (<code>+</code>) and repeated occurrences of <code>j</code>—this is allowed because another argument has determined the form of these patterns.</p>
 </div>
 <div class="paragraph">
-<p>We will return to this function in Section <a href="#sect:provisional">Provisional Definitions</a> to complete the definition of <code>parity</code>.</p>
+<p>We will return to this function in <a href="#sect:provisional">Provisional Definitions</a> to complete the definition of <code>parity</code>.</p>
 </div>
 </div>
 </div>
@@ -2614,7 +2614,7 @@ twoPlusTwo = Refl</pre>
 <h3 id="sect:empty">The Empty Type</h3>
 <div class="paragraph">
 <p>There is an empty type, \(\bot\), which has no constructors.
-It is therefore impossible to construct an element of the empty type, at least without using a partially defined or general recursive function (see Section <a href="#sect:totality">Totality Checking</a> for more details).
+It is therefore impossible to construct an element of the empty type, at least without using a partially defined or general recursive function (see <a href="#sect:totality">Totality Checking</a> for more details).
 We can therefore use the empty type to prove that something is impossible, for example zero is never equal to a successor:</p>
 </div>
 <div class="listingblock">
@@ -2909,7 +2909,7 @@ theorems.idr:25:empty2 is possibly not total due to recursive path empty2</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Reassuringly, our proof in Section <a href="#sect:empty">The Empty Type</a> that the zero and successor constructors are disjoint is total:</p>
+<p>Reassuringly, our proof in <a href="#sect:empty">The Empty Type</a> that the zero and successor constructors are disjoint is total:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -3202,7 +3202,7 @@ sym Refl = Refl</pre>
 The proof of the second lemma proceeds in exactly the same way.</p>
 </div>
 <div class="paragraph">
-<p>We can now test the <code>natToBin</code> function from Section <a href="#sect:nattobin">[sect:nattobin]</a> at the prompt.
+<p>We can now test the <code>natToBin</code> function from <a href="#sect:nattobin">[sect:nattobin]</a> at the prompt.
 The number 42 is 101010 in binary.
 The binary digits are reversed:</p>
 </div>
@@ -4493,7 +4493,7 @@ A reprint of an unpublished manuscript from 1969.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2015-01-22 13:12:52 MSK
+Last updated 2015-01-22 17:01:00 MSK
 </div>
 </div>
 </body>
