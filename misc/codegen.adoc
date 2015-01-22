@@ -1,6 +1,5 @@
 [[c-target]]
-C Target
-~~~~~~~~
+=== C Target
 
 The default target of [logo]#Idris# is C.
 Compiling via :
@@ -34,20 +33,18 @@ factorial 0 = 1
 factorial n = n * (factorial (n-1))
 
 main : IO ()
-main = do      
+main = do
      putStrLn $ show $ factorial 3
 ----
 
 [[javascript-target]]
-JavaScript Target
-~~~~~~~~~~~~~~~~~
+=== JavaScript Target
 
 [logo]#Idris# is capable of producing _JavaScript_ code that can be run in a browser as well as in the _NodeJS_ environment or alike.
 One can use the FFI to communicate with the _JavaScript_ ecosystem.
 
 [[code-generation]]
-Code Generation
-^^^^^^^^^^^^^^^
+==== Code Generation
 
 Code generation is split into two separate targets.
 To generate code that is tailored for running in the browser issue the following command:
@@ -71,8 +68,7 @@ Take into consideration that the _JavaScript_ code generator is using `console.l
 This behaviour does not show up in the _NodeJS_ code generator.
 
 [[using-the-ffi]]
-Using the FFI
-^^^^^^^^^^^^^
+==== Using the FFI
 
 To write a useful application we need to communicate with the outside world.
 Maybe we want to manipulate the DOM or send an Ajax request.
@@ -131,8 +127,7 @@ main = do
 The program outputs `3`, just like we expected.
 
 [[including-external-javascript-files]]
-Including external _JavaScript_ files
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+==== Including external _JavaScript_ files
 
 Whenever one is working with _JavaScript_ one might want to include external libraries or just some functions that she or he wants to call via FFI which are stored in external files.
 The _JavaScript_ and _NodeJS_ code generators understand the `%include` directive.
@@ -156,8 +151,7 @@ And for use in the browser:
 The given files will be added to the top of the generated code.
 
 [[including-nodejs-modules]]
-Including _NodeJS_ modules
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+==== Including _NodeJS_ modules
 
 The _NodeJS_ code generator can also include modules with the `%lib` directive.
 
@@ -172,8 +166,7 @@ This directive compiles into the following _JavaScript_
 ----
 
 [[shrinking-down-generated-javascript]]
-Shrinking down generated _JavaScript_
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+==== Shrinking down generated _JavaScript_
 
 [logo]#Idris# can produce very big chunks of _JavaScript_ code.
 However, the generated code can be minified using the `closure-compiler` from Google.

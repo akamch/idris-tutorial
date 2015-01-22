@@ -1,0 +1,4500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 1.5.2">
+<meta name="author" content="The Idris Community">
+<title>Programming in Idris: A Tutorial</title>
+<link rel="stylesheet" href="css/idris-tutorial.css">
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [["\\(", "\\)"]],
+    displayMath: [["\\[", "\\]"]],
+    ignoreClass: "nostem|nolatexmath"
+  },
+  asciimath2jax: {
+    delimiters: [["\\$", "\\$"]],
+    ignoreClass: "nostem|noasciimath"
+  },
+  TeX: { equationNumbers: { autoNumber: "none" } }
+});
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.4.0/MathJax.js?config=TeX-MML-AM_HTMLorMML"></script>
+</head>
+<body class="article">
+<div id="header">
+<h1>Programming in <span class="logo">Idris</span>: A Tutorial</h1>
+<div class="details">
+<span id="author" class="author">The Idris Community</span><br>
+<span id="revdate">15th January 2015</span>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#introduction">Introduction</a>
+<ul class="sectlevel2">
+<li><a href="#intended-audience">Intended Audience</a></li>
+<li><a href="#example-code">Example Code</a></li>
+</ul>
+</li>
+<li><a href="#getting-started">Getting Started</a>
+<ul class="sectlevel2">
+<li><a href="#prerequisites">Prerequisites</a></li>
+<li><a href="#downloading-and-installing">Downloading and Installing</a></li>
+<li><a href="#the-interactive-environment">The Interactive Environment</a></li>
+</ul>
+</li>
+<li><a href="#types-and-functions">Types and Functions</a>
+<ul class="sectlevel2">
+<li><a href="#primitive-types">Primitive Types</a></li>
+<li><a href="#data-types">Data Types</a></li>
+<li><a href="#functions">Functions</a></li>
+<li><a href="#dependent-types">Dependent Types</a></li>
+<li><a href="#io">I/O</a></li>
+<li><a href="#sect:do"><code>“do”</code> notation</a></li>
+<li><a href="#sect:lazy">Laziness</a></li>
+<li><a href="#useful-data-types">Useful Data Types</a></li>
+<li><a href="#more-expressions">More Expressions</a></li>
+<li><a href="#dependent-records">Dependent Records</a></li>
+</ul>
+</li>
+<li><a href="#sec:classes">Type Classes</a>
+<ul class="sectlevel2">
+<li><a href="#default-definitions">Default Definitions</a></li>
+<li><a href="#extending-classes">Extending Classes</a></li>
+<li><a href="#sec:functor">Functors and Applicatives</a></li>
+<li><a href="#sec:monad">Monads and <code>do</code>-notation</a></li>
+<li><a href="#idiom-brackets">Idiom brackets</a></li>
+<li><a href="#named-instances">Named Instances</a></li>
+</ul>
+</li>
+<li><a href="#sect:namespaces">Modules and Namespaces</a>
+<ul class="sectlevel2">
+<li><a href="#export-modifiers">Export Modifiers</a></li>
+<li><a href="#explicit-namespaces">Explicit Namespaces</a></li>
+<li><a href="#parameterised-blocks">Parameterised blocks</a></li>
+</ul>
+</li>
+<li><a href="#sect:interp">Example: The Well-Typed Interpreter</a>
+<ul class="sectlevel2">
+<li><a href="#sect:interp:representation">Representing Languages</a></li>
+<li><a href="#sec:interp:eval">Writing the Interpreter</a></li>
+<li><a href="#sec:interp:testing">Testing</a></li>
+<li><a href="#sec:interp:running">Running</a></li>
+</ul>
+</li>
+<li><a href="#views-and-the-with-rule">Views and the <code>“with”</code> rule</a>
+<ul class="sectlevel2">
+<li><a href="#dependent-pattern-matching">Dependent pattern matching</a></li>
+<li><a href="#the-with-rule-matching-intermediate-values">The <code>with</code> rule — matching intermediate values</a></li>
+</ul>
+</li>
+<li><a href="#theorem-proving">Theorem Proving</a>
+<ul class="sectlevel2">
+<li><a href="#equality">Equality</a></li>
+<li><a href="#sect:empty">The Empty Type</a></li>
+<li><a href="#simple-theorems">Simple Theorems</a></li>
+<li><a href="#interactive-theorem-proving">Interactive theorem proving</a></li>
+<li><a href="#sect:totality">Totality Checking</a></li>
+</ul>
+</li>
+<li><a href="#sect:provisional">Provisional Definitions</a>
+<ul class="sectlevel2">
+<li><a href="#provisional-definitions">Provisional definitions</a></li>
+<li><a href="#suspension-of-disbelief">Suspension of Disbelief</a></li>
+<li><a href="#example-binary-numbers">Example: Binary numbers</a></li>
+</ul>
+</li>
+<li><a href="#interactive-editing">Interactive Editing</a>
+<ul class="sectlevel2">
+<li><a href="#editing-at-the-repl">Editing at the REPL</a></li>
+<li><a href="#editing-commands">Editing Commands</a></li>
+<li><a href="#interactive-editing-in-vim">Interactive Editing in Vim</a></li>
+</ul>
+</li>
+<li><a href="#syntax-extensions">Syntax Extensions</a>
+<ul class="sectlevel2">
+<li><a href="#syntax-rules"><code>syntax</code> rules</a></li>
+<li><a href="#dsl-notation"><code>dsl</code> notation</a></li>
+</ul>
+</li>
+<li><a href="#miscellany">Miscellany</a>
+<ul class="sectlevel2">
+<li><a href="#auto-implicit-arguments">Auto implicit arguments</a></li>
+<li><a href="#implicit-conversions">Implicit conversions</a></li>
+<li><a href="#literate-programming">Literate programming</a></li>
+<li><a href="#foreign-function-calls">Foreign function calls</a></li>
+<li><a href="#type-providers">Type Providers</a></li>
+<li><a href="#c-target">C Target</a></li>
+<li><a href="#javascript-target">JavaScript Target</a></li>
+<li><a href="#cumulativity">Cumulativity</a></li>
+</ul>
+</li>
+<li><a href="#further-reading">Further Reading</a></li>
+<li><a href="#_bibliography">Bibliography</a></li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="introduction">Introduction</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In conventional programming languages, there is a clear distinction between <em>types</em> and <em>values</em>.
+For example, in Haskell <a href="#haskell-report">[haskell-report]</a>, the following are types, representing integers, characters, lists of characters, and lists of any value respectively:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Int</code>, <code>Char</code>, <code>[Char]</code>, <code>[a]</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Correspondingly, the following values are examples of inhabitants of those types:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>42</code>, <code>'a'</code>, <code>"Hello world!"</code>, <code>[2,3,4,5,6]</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In a language with <em>dependent types</em>, however, the distinction is less clear.
+Dependent types allow types to &#8220;depend&#8221; on values — in other words, types are a <em>first class</em> language construct and can be manipulated like any other value.
+The standard example is the type of lists of a given length<span class="footnote">[<a id="_footnoteref_1" class="footnote" href="#_footnote_1" title="View footnote.">1</a>]</span>, <code>Vect n a</code>, where <code>a</code> is the element type and <code>n</code> is the length of the list and can be an arbitrary term.</p>
+</div>
+<div class="paragraph">
+<p>When types can contain values, and where those values describe properties (e.g. the length of a list) the type of a function can begin to describe its own properties.
+For example, concatenating two lists has the property that the resulting list’s length is the sum of the lengths of the two input lists.
+We can therefore give the following type to the <code>app</code> function, which concatenates vectors:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>app : Vect n a -&gt; Vect m a -&gt; Vect (n + m) a</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This tutorial introduces <span class="logo">Idris</span>, a general purpose functional programming language with dependent types.
+The goal of the <span class="logo">Idris</span> project is to build a dependently typed language suitable for verifiable <em>systems</em> programming.
+To this end, <span class="logo">Idris</span> is a compiled language which aims to generate efficient executable code.
+It also has a lightweight foreign function interface which allows easy interaction with external C libraries.</p>
+</div>
+<div class="sect2">
+<h3 id="intended-audience">Intended Audience</h3>
+<div class="paragraph">
+<p>This tutorial is intended as a brief introduction to the language, and is aimed at readers already familiar with a functional language such as Haskell<span class="footnote">[<a id="_footnoteref_2" class="footnote" href="#_footnote_2" title="View footnote.">2</a>]</span> or OCaml<span class="footnote">[<a id="_footnoteref_3" class="footnote" href="#_footnote_3" title="View footnote.">3</a>]</span>.
+In particular, a certain amount of familiarity with Haskell syntax is assumed, although most concepts will at least be explained briefly.
+The reader is also assumed to have some interest in using dependent types for writing and verifying systems software.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="example-code">Example Code</h3>
+<div class="paragraph">
+<p>This tutorial includes some example code, which has been tested with <span class="logo">Idris</span> version 0.9.16.
+The files are available in the <span class="logo">Idris</span> distribution, and provided along side the tutorial source, so that you can try them out easily, under <code>tutorial/examples</code>.
+However, it is strongly recommended that you can type them in yourself, rather than simply loading and reading them.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="getting-started">Getting Started</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="prerequisites">Prerequisites</h3>
+<div class="paragraph">
+<p>Before installing <span class="logo">Idris</span>, you will need to make sure you have all of the necessary libraries and tools.
+You will need:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A fairly recent Haskell platform.
+Version 2013.2.0.0 should be sufficiently recent, though it is better to be completely up to date.</p>
+</li>
+<li>
+<p>The <em>GNU Multiple Precision Arithmetic Library</em> (GMP) is available from MacPorts and all major Linux distributions.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="downloading-and-installing">Downloading and Installing</h3>
+<div class="paragraph">
+<p>The easiest way to install <span class="logo">Idris</span>, if you have all of the prerequisites, is to type:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>cabal update; cabal install idris</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will install the latest version released on Hackage, along with any dependencies.
+If, however, you would like the most up to date development version you can find it, as well as build intructions, on GitHub at: <a href="https://github.com/edwinb/Idris-dev" class="bare">https://github.com/edwinb/Idris-dev</a>.</p>
+</div>
+<div class="paragraph">
+<p>To check that installation has succeeded, and to write your first <span class="logo">Idris</span> program, create a file called <code>“hello.idr”</code> containing the following text:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">module Main
+
+main : IO ()
+main = putStrLn "Hello world"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you are familiar with Haskell, it should be fairly clear what the program is doing and how it works, but if not, we will explain the details later.
+You can compile the program to an executable by entering <code>idris hello.idr -o hello</code> at the shell prompt.
+This will create an executable called <code>hello</code>, which you can run:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ idris hello.idr -o hello
+$ ./hello
+Hello world</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that the <code>$</code> indicates the shell prompt! Should the <span class="logo">Idris</span> executable not be found please ensure that you have added <code>~/.cabal/bin</code> to your <code>$PATH</code> environment variable.
+Mac OS X users may find they need to use <code>~/Library/Haskell/bin</code> instead.
+Some useful options to the <span class="logo">Idris</span> command are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>-o prog</code> to compile to an executable called <code>prog</code>.</p>
+</li>
+<li>
+<p><code>--check</code> type check the file and its dependencies without starting the interactive environment.</p>
+</li>
+<li>
+<p><code>--help</code> display usage summary and command line options</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="the-interactive-environment">The Interactive Environment</h3>
+<div class="paragraph">
+<p>Entering <code>idris</code> at the shell prompt starts up the interactive environment.
+You should see something like the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ idris
+     ____    __     _
+    /  _/___/ /____(_)____
+    / // __  / ___/ / ___/     Version 0.9.16
+  _/ // /_/ / /  / (__  )      http://www.idris-lang.org/
+ /___/\__,_/_/  /_/____/       Type :? for help
+
+Idris&gt;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This gives a <code>ghci</code>-style interface which allows evaluation of, as well as type checking of, expressions; theorem proving, compilation; editing; and various other operations.
+The command <code>:?</code> gives a list of supported commands.
+Listing [run1] shows an example run in which <code>hello.idr</code> is loaded, the type of <code>main</code> is checked and then the program is compiled to the executable <code>hello</code>.
+Type checking a file, if successful, creates a bytecode version of the file (in this case <code>hello.ibc</code>) to speed up loading in future.
+The bytecode is regenerated if the source file changes.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ idris hello.idr
+     ____    __     _
+    /  _/___/ /____(_)____
+    / // __  / ___/ / ___/     Version 0.9.16
+  _/ // /_/ / /  / (__  )      http://www.idris-lang.org/
+ /___/\__,_/_/  /_/____/       Type :? for help
+
+Type checking ./hello.idr
+*hello&gt; :t main
+Main.main : IO ()
+*hello&gt; :c hello
+*hello&gt; :q
+Bye bye
+$ ./hello
+Hello world</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="types-and-functions">Types and Functions</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="primitive-types">Primitive Types</h3>
+<div class="paragraph">
+<p><span class="logo">Idris</span> defines several primitive types: <code>Int</code>, <code>Integer</code> and <code>Float</code> for numeric operations, <code>Char</code> and <code>String</code> for text manipulation, and <code>Ptr</code> which represents foreign pointers.
+There are also several data types declared in the library, including <code>Bool</code>, with values <code>True</code> and <code>False</code>.
+We can declare some constants with these types.
+Enter the following into a file <code>prims.idr</code> and load it into the <span class="logo">Idris</span> interactive environment by typing <code>idris prims.idr</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">module prims
+
+x : Int
+x = 42
+
+foo : String
+foo = "Sausage machine"
+
+bar : Char
+bar = 'Z'
+
+quux : Bool
+quux = False</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>An <span class="logo">Idris</span> file consists of an optional module declaration (here <code>module prims</code>) followed by an optional list of imports (none here, however <span class="logo">Idris</span> programs can consist of several modules, and the definitions in each module each have their own namespace, as we will discuss in Section <a href="#sect:namespaces">Modules and Namespaces</a>) and a collection of declarations and definitions.
+The order of definitions is significant — functions and data types must be defined before use.
+Each definition must have a type declaration, for example see <code>x : Int</code>, <code>foo : String</code>, from the above listing.
+Indentation is significant — a new declaration begins at the same level of indentation as the preceding declaration.
+Alternatively, declarations may be terminated with a semicolon.</p>
+</div>
+<div class="paragraph">
+<p>A library module <code>prelude</code> is automatically imported by every <span class="logo">Idris</span> program, including facilities for IO, arithmetic, data structures and various common functions.
+The prelude defines several arithmetic and comparison operators, which we can use at the prompt.
+Evaluating things at the prompt gives an answer, and the type of the answer.
+For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>*prims&gt; 6*6+6
+42 : Int
+*prims&gt; x == 6*6+6
+True : Bool</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>All of the usual arithmetic and comparison operators are defined for the primitive types.
+They are overloaded using type classes, as we will discuss in Section <a href="#sec:classes">Type Classes</a> and can be extended to work on user defined types.
+Boolean expressions can be tested with the <code>if...then...else</code> construct:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>*prims&gt; if x == 6 * 6 + 6 then "The answer!" else "Not the answer"
+"The answer!" : String</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="data-types">Data Types</h3>
+<div class="paragraph">
+<p>Data types are declared in a similar way to Haskell data types, with a similar syntax.
+Natural numbers and lists, for example, can be declared as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">data Nat    = Z   | S Nat           -- Natural numbers
+                                    -- (zero and successor)
+data List a = Nil | (::) a (List a) -- Polymorphic lists</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above declarations are taken from the standard library.
+Unary natural numbers can be either zero (<code>Z</code>), or the successor of another natural number (<code>S k</code>).
+Lists can either be empty (<code>Nil</code>) or a value added to the front of another list (<code>x :: xs</code>).
+In the declaration for <code>List</code>, we used an infix operator <code>::</code>.
+New operators such as this can be added using a fixity declaration, as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>infixr 10 ::</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Functions, data constructors and type constructors may all be given infix operators as names.
+They may be used in prefix form if enclosed in brackets, e.g. <code>(::)</code>.
+Infix operators can use any of the symbols:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>:+-*/=_.?|&amp;&gt;&lt;!@$%^~.</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="functions">Functions</h3>
+<div class="paragraph">
+<p>Functions are implemented by pattern matching, again using a similar syntax to Haskell.
+The main difference is that <span class="logo">Idris</span> requires type declarations for all functions, using a single colon <code>:</code> (rather than Haskell’s double colon <code>::</code>).
+Some natural number arithmetic functions can be defined as follows, again taken from the standard library:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">-- Unary addition
+plus : Nat -&gt; Nat -&gt; Nat
+plus Z     y = y
+plus (S k) y = S (plus k y)
+
+-- Unary multiplication
+mult : Nat -&gt; Nat -&gt; Nat
+mult Z     y = Z
+mult (S k) y = plus y (mult k y)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The standard arithmetic operators <code>+</code> and <code>*</code> are also overloaded for use by <code>Nat</code>, and are implemented using the above functions.
+Unlike Haskell, there is no restriction on whether types and function names must begin with a capital letter or not.
+Function names (<code>plus</code> and <code>mult</code> above), data constructors (<code>Z</code>, <code>S</code>, <code>Nil</code> and <code>::</code>) and type constructors (<code>Nat</code> and <code>List</code>) are all part of the same namespace.
+We can test these functions at the <span class="logo">Idris</span> prompt:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Idris&gt; plus (S (S Z)) (S (S Z))
+4 : Nat
+Idris&gt; mult (S (S (S Z))) (plus (S (S Z)) (S (S Z)))
+12 : Nat</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Note:</strong> <span class="logo">Idris</span> automatically desugars the <code>Nat</code> representation into a more human readable format.
+The result of <code>plus (S (S Z)) (S (S Z))</code> is actually <code>(S (S (S (S Z))))</code> which is the Integer 4.
+This can be checked at the <span class="logo">Idris</span> prompt:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Idris&gt; (S (S (S (S Z))))
+4 : Nat</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Like arithmetic operations, integer literals are also overloaded using type classes, meaning that we can also test the functions as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Idris&gt; plus 2 2
+4 : Nat
+Idris&gt; mult 3 (plus 2 2)
+12 : Nat</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You may wonder, by the way, why we have unary natural numbers when our computers have perfectly good integer arithmetic built in.
+The reason is primarily that unary numbers have a very convenient structure which is easy to reason about, and easy to relate to other data structures as we will see later.
+Nevertheless, we do not want this convenience to be at the expense of efficiency.
+Fortunately, <span class="logo">Idris</span> knows about the relationship between <code>Nat</code> (and similarly structured types) and numbers.
+This means it can optimise the representation, and functions such as <code>plus</code> and <code>mult</code>.</p>
+</div>
+<div class="sect3">
+<h4 id="where-clauses"><code>where</code> clauses</h4>
+<div class="paragraph">
+<p>Functions can also be defined <em>locally</em> using <code>where</code> clauses.
+For example, to define a function which reverses a list, we can use an auxiliary function which accumulates the new, reversed list, and which does not need to be visible globally:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">reverse : List a -&gt; List a
+reverse xs = revAcc [] xs where
+  revAcc : List a -&gt; List a -&gt; List a
+  revAcc acc [] = acc
+  revAcc acc (x :: xs) = revAcc (x :: acc) xs</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Indentation is significant — functions in the <code>where</code> block must be indented further than the outer function.</p>
+</div>
+<div class="paragraph">
+<p><strong>Scope:</strong> Any names which are visible in the outer scope are also visible in the <code>where</code> clause (unless they have been redefined, such as <code>xs</code> here).
+A name which appears only in the type will be in scope in the <code>where</code> clause if it is a <em>parameter</em> to one of the types, i.e. it is fixed across the entire structure.</p>
+</div>
+<div class="paragraph">
+<p>As well as functions, <code>where</code> blocks can include local data declarations, such as the following where <code>MyLT</code> is not accessible outside the definition of <code>foo</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">foo : Int -&gt; Int
+foo x = case isLT of
+            Yes =&gt; x*2
+            No =&gt; x*4
+    where
+       data MyLT = Yes | No
+
+       isLT : MyLT
+       isLT = if x &lt; 20 then Yes else No</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In general, functions defined in a <code>where</code> clause need a type declaration just like any top level function.
+However, the type declaration for a function <code>f</code> <em>can</em> be omitted if:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>f</code> appears in the right hand side of the top level definition</p>
+</li>
+<li>
+<p>The type of <code>f</code> can be completely determined from its first application</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>So, for example, the following definitions are legal:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">even : Nat -&gt; Bool
+even Z = True
+even (S k) = odd k where
+  odd Z = False
+  odd (S k) = even k
+
+test : List Nat
+test = [c (S 1), c Z, d (S Z)]
+  where c x = 42 + x
+        d y = c (y + 1 + z y)
+              where z w = y + w</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="dependent-types">Dependent Types</h3>
+<div class="sect3">
+<h4 id="vectors">Vectors</h4>
+<div class="paragraph">
+<p>A standard example of a dependent type is the type of &#8220;lists with length&#8221;, conventionally called vectors in the dependent type literature.
+They are available as part of the <span class="logo">Idris</span> library, by importing <code>Data.Vect</code>, or we can declare them as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">data Vect : Nat -&gt; Type -&gt; Type where
+   Nil  : Vect Z a
+   (::) : a -&gt; Vect k a -&gt; Vect (S k) a</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that we have used the same constructor names as for <code>List</code>.
+Ad-hoc name overloading such as this is accepted by <span class="logo">Idris</span>, provided that the names are declared in different namespaces (in practice, normally in different modules).
+Ambiguous constructor names can normally be resolved from context.</p>
+</div>
+<div class="paragraph">
+<p>This declares a family of types, and so the form of the declaration is rather different from the simple type declarations above.
+We explicitly state the type of the type constructor <code>Vect</code> — it takes a <code>Nat</code> and a type as an argument, where <code>Type</code> stands for the type of types.
+We say that <code>Vect</code> is <em>indexed</em> over <code>Nat</code> and <em>parameterised</em> by <code>Type</code>.
+Each constructor targets a different part of the family of types.
+<code>Nil</code> can only be used to construct vectors with zero length, and <code>::</code> to construct vectors with non-zero length.
+In the type of <code>::</code>, we state explicitly that an element of type <code>a</code> and a tail of type <code>Vect k a</code> (i.e., a vector of length <code>k</code>) combine to make a vector of length <code>S k</code>.</p>
+</div>
+<div class="paragraph">
+<p>We can define functions on dependent types such as <code>Vect</code> in the same way as on simple types such as <code>List</code> and <code>Nat</code> above, by pattern matching.
+The type of a function over <code>Vect</code> will describe what happens to the lengths of the vectors involved.
+For example, <code>++</code>, defined as follows, appends two `Vect`s:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">(++) : Vect n a -&gt; Vect m a -&gt; Vect (n + m) a
+(++) Nil       ys = ys
+(++) (x :: xs) ys = x :: xs ++ ys</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The type of <code>(++)</code> states that the resulting vector’s length will be the sum of the input lengths.
+If we get the definition wrong in such a way that this does not hold, <span class="logo">Idris</span> will not accept the definition.
+For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">(++) : Vect n a -&gt; Vect m a -&gt; Vect (n + m) a
+(++) Nil       ys = ys
+(++) (x :: xs) ys = x :: xs ++ xs -- BROKEN</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When run through the <span class="logo">Idris</span> type checker, this results in the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ idris vbroken.idr --check
+vbroken.idr:9:23:When elaborating right hand side of Vect.++:
+When elaborating an application of constructor Vect.:::
+        Can't unify
+                Vect (k + k) a
+        with
+                Vect (plus k m) a
+
+        Specifically:
+                Can't unify
+                        plus k k
+                with
+                        plus k m</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This error message suggests that there is a length mismatch between two vectors — we needed a vector of length <code>k + m</code>, but provided a vector of length <code>k + k</code>.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="the-finite-sets">The Finite Sets</h4>
+<div class="paragraph">
+<p>Finite sets, as the name suggests, are sets with a finite number of elements.
+They are available as part of the <span class="logo">Idris</span> library, by importing <code>Data.Fin</code>, or can be declared as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">data Fin : Nat -&gt; Type where
+   FZ : Fin (S k)
+   FS : Fin k -&gt; Fin (S k)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>FZ</code> is the zeroth element of a finite set with <code>S k</code> elements; <code>FS n</code> is the <code>n+1th</code> element of a finite set with <code>S k</code> elements.
+<code>Fin</code> is indexed by a <code>Nat</code>, which represents the number of elements in the set.
+Obviously we can’t construct an element of an empty set, so neither constructor targets <code>Fin Z</code>.</p>
+</div>
+<div class="paragraph">
+<p>A useful application of the <code>Fin</code> family is to represent bounded natural numbers.
+Since the first <code>n</code> natural numbers form a finite set of <code>n</code> elements, we can treat <code>Fin n</code> as the set of natural numbers bounded by <code>n</code>.</p>
+</div>
+<div class="paragraph">
+<p>For example, the following function which looks up an element in a <code>Vect</code>, by a bounded index given as a <code>Fin n</code>, is defined in the prelude:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">index : Fin n -&gt; Vect n a -&gt; a
+index FZ     (x :: xs) = x
+index (FS k) (x :: xs) = index k xs</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This function looks up a value at a given location in a vector.
+The location is bounded by the length of the vector (<code>n</code> in each case), so there is no need for a run-time bounds check.
+The type checker guarantees that the location is no larger than the length of the vector.</p>
+</div>
+<div class="paragraph">
+<p>Note also that there is no case for <code>Nil</code> here.
+This is because it is impossible.
+Since there is no element of <code>Fin Z</code>, and the location is a <code>Fin n</code>, then <code>n</code> can not be <code>Z</code>.
+As a result, attempting to look up an element in an empty vector would give a compile time type error, since it would force <code>n</code> to be <code>Z</code>.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="implicit-arguments">Implicit Arguments</h4>
+<div class="paragraph">
+<p>Let us take a closer look at the type of <code>index</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>index : Fin n -&gt; Vect n a -&gt; a</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It takes two arguments, an element of the finite set of <code>n</code> elements, and a vector with <code>n</code> elements of type <code>a</code>.
+But there are also two names, <code>n</code> and <code>a</code>, which are not declared explicitly.
+These are <em>implicit</em> arguments to <code>index</code>.
+We could also write the type of <code>index</code> as:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>index : {a:Type} -&gt; {n:Nat} -&gt; Fin n -&gt; Vect n a -&gt; a</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Implicit arguments, given in braces <code>{}</code> in the type declaration, are not given in applications of <code>index</code>; their values can be inferred from the types of the <code>Fin n</code> and <code>Vect n a</code> arguments.
+Any name with a which appears as a parameter or index in a type declaration, but which is otherwise free, will be automatically bound as an implicit argument.
+Implicit arguments can still be given explicitly in applications, using <code>{a=value}</code> and <code>{n=value}</code>, for example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>index {a=Int} {n=2} FZ (2 :: 3 :: Nil)</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In fact, any argument, implicit or explicit, may be given a name.
+We could have declared the type of <code>index</code> as:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>index : (i:Fin n) -&gt; (xs:Vect n a) -&gt; a</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It is a matter of taste whether you want to do this — sometimes it can help document a function by making the purpose of an argument more clear.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="using-notation"><code>“using”</code> notation</h4>
+<div class="paragraph">
+<p>Sometimes it is useful to provide types of implicit arguments, particularly where there is a dependency ordering, or where the implicit arguments themselves have dependencies.
+For example, we may wish to state the types of the implicit arguments in the following definition, which defines a predicate on vectors:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">data Elem : a -&gt; Vect n a -&gt; Type where
+   Here :  {x:a} -&gt;   {xs:Vect n a} -&gt; Elem x (x :: xs)
+   There : {x,y:a} -&gt; {xs:Vect n a} -&gt; Elem x xs -&gt; Elem x (y :: xs)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>An instance of <code>Elem x xs</code> states that <code>x</code> is an element of <code>xs</code>.
+We can construct such a predicate if the required element is <code>Here</code>, at the head of the vector, or <code>There</code>, in the tail of the vector.
+For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">testVec : Vect 4 Int
+testVec = 3 :: 4 :: 5 :: 6 :: Nil
+
+inVect : Elem 5 testVec
+inVect = There (There Here)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If the same implicit arguments are being used a lot, it can make a definition difficult to read.
+To avoid this problem, a <code>using</code> block gives the types and ordering of any implicit arguments which can appear within the block:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">using (x:a, y:a, xs:Vect n a)
+  data Elem : a -&gt; Vect n a -&gt; Type where
+     Here  : Elem x (x :: xs)
+     There : Elem x xs -&gt; Elem x (y :: xs)</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="note-declaration-order-and-mutual-blocks">Note: Declaration Order and <code>mutual</code> blocks</h4>
+<div class="paragraph">
+<p>In general, functions and data types must be defined before use, since dependent types allow functions to appear as part of types, and their reduction behaviour to affect type checking.
+However, this restriction can be relaxed by using a <code>mutual</code> block, which allows data types and functions to be defined simultaneously:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">mutual
+  even : Nat -&gt; Bool
+  even Z = True
+  even (S k) = odd k
+
+  odd : Nat -&gt; Bool
+  odd Z = False
+  odd (S k) = even k</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In a <code>mutual</code> block, first all of the type declarations are added, then the function bodies.
+As a result, none of the function types can depend on the reduction behaviour of any of the functions in the block.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="io">I/O</h3>
+<div class="paragraph">
+<p>Computer programs are of little use if they do not interact with the user or the system in some way.
+The difficulty in a pure language such as <span class="logo">Idris</span> — that is, a language where expressions do not have side-effects — is that I/O is inherently side-effecting.
+Therefore in <span class="logo">Idris</span>, such interactions are encapsulated in the type <code>IO</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>data IO a -- IO operation returning a value of type a</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We’ll leave the definition of <code>IO</code> abstract, but effectively it describes what the I/O operations to be executed are, rather than how to execute them.
+The resulting operations are executed externally, by the run-time system.
+We’ve already seen one IO program:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>main : IO ()
+main = putStrLn "Hello world"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The type of <code>putStrLn</code> explains that it takes a string, and returns an element of the unit type <code>()</code> via an I/O action.
+There is a variant <code>putStr</code> which outputs a string without a newline:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>putStrLn : String -&gt; IO ()
+putStr   : String -&gt; IO ()</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We can also read strings from user input:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>getLine : IO String</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A number of other I/O operations are defined in the prelude, for example for reading and writing files, including:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">data File -- abstract
+data Mode = Read | Write | ReadWrite
+
+openFile  : String -&gt; Mode -&gt; IO File
+closeFile : File -&gt; IO ()
+
+fread  : File -&gt; IO String
+fwrite : File -&gt; String -&gt; IO ()
+feof   : File -&gt; IO Bool
+
+readFile : String -&gt; IO String</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="sect:do"><code>“do”</code> notation</h3>
+<div class="paragraph">
+<p>I/O programs will typically need to sequence actions, feeding the output of one computation into the input of the next.
+<code>IO</code> is an abstract type, however, so we can’t access the result of a computation directly.
+Instead, we sequence operations with <code>do</code> notation:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">greet : IO ()
+greet = do putStr "What is your name? "
+           name &lt;- getLine
+           putStrLn ("Hello " ++ name)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The syntax <code>x &lt;- iovalue</code> executes the I/O operation <code>iovalue</code>, of type <code>IO a</code>, and puts the result, of type <code>a</code> into the variable <code>x</code>.
+In this case, <code>getLine</code> returns an <code>IO String</code>, so <code>name</code> has type <code>String</code>.
+Indentation is significant — each statement in the do block must begin in the same column.
+The <code>return</code> operation allows us to inject a value directly into an IO operation:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>return : a -&gt; IO a</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As we will see later, <code>do</code> notation is more general than this, and can be overloaded.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="sect:lazy">Laziness</h3>
+<div class="paragraph">
+<p>Normally, arguments to functions are evaluated before the function itself (that is, <span class="logo">Idris</span> uses <em>eager</em> evaluation).
+However, this is not always the best approach.
+Consider the following function:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">boolCase : Bool -&gt; a -&gt; a -&gt; a;
+boolCase True  t e = t;
+boolCase False t e = e;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This function uses one of the <code>t</code> or <code>e</code> arguments, but not both (in fact, this is used to implement the <code>if...then...else</code> construct as we will see later.
+We would prefer if <em>only</em> the argument which was used was evaluated.
+To achieve this, <span class="logo">Idris</span> provides a <code>Lazy</code> data type, which allows evaluation to be suspended:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">data Lazy : Type -&gt; Type where
+     Delay : (val : a) -&gt; Lazy a
+
+Force : Lazy a -&gt; a</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A value of type <code>Lazy a</code> is unevaluated until it is forced by <code>Force</code>.
+The <span class="logo">Idris</span> type checker knows about the <code>Lazy</code> type, and inserts conversions where necessary between <code>Lazy a</code> and <code>a</code>, and vice versa.
+We can therefore write <code>boolCase</code> as follows, without any explicit use of <code>Force</code> or <code>Delay</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">boolCase : Bool -&gt; Lazy a -&gt; Lazy a -&gt; a;
+boolCase True  t e = t;
+boolCase False t e = e;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="useful-data-types">Useful Data Types</h3>
+<div class="paragraph">
+<p><span class="logo">Idris</span> includes a number of useful data types and library functions (see the <code>libs/</code> directory in the distribution).
+This chapter describes a few of these.
+The functions described here are imported automatically by every <span class="logo">Idris</span> program, as part of <code>Prelude.idr</code>.</p>
+</div>
+<div class="sect3">
+<h4 id="list-and-vect"><code>List</code> and <code>Vect</code></h4>
+<div class="paragraph">
+<p>We have already seen the <code>List</code> and <code>Vect</code> data types:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">data List a = Nil | (::) a (List a)
+
+data Vect : Nat -&gt; Type -&gt; Type where
+   Nil  : Vect Z a
+   (::) : a -&gt; Vect k a -&gt; Vect (S k) a</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that the constructor names are the same for each — constructor names (in fact, names in general) can be overloaded, provided that they are declared in different namespaces (see Section [sect:namespaces]), and will typically be resolved according to their type.
+As syntactic sugar, any type with the constructor names <code>Nil</code> and <code>::</code> can be written in list form.
+For example:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>[]</code> means <code>Nil</code></p>
+</li>
+<li>
+<p><code>[1,2,3]</code> means <code>1 :: 2 :: 3 :: Nil</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The library also defines a number of functions for manipulating these types.
+<code>map</code> is overloaded both for <code>List</code> and <code>Vect</code> and applies a function to every element of the list or vector.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">map : (a -&gt; b) -&gt; List a -&gt; List b
+map f []        = []
+map f (x :: xs) = f x :: map f xs
+
+map : (a -&gt; b) -&gt; Vect n a -&gt; Vect n b
+map f []        = []
+map f (x :: xs) = f x :: map f xs</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For example, given the following vector of integers, and a function to double an integer:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">intVec : Vect 5 Int
+intVec = [1, 2, 3, 4, 5]
+
+double : Int -&gt; Int
+double x = x * 2</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>the function <code>map</code> can be used as follows to double every element in the vector:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>*usefultypes&gt; show (map double intVec)
+"[2, 4, 6, 8, 10]" : String</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You’ll find these examples in <code>usefultypes.idr</code> in the <code>examples/</code> directory.
+For more details of the functions available on <code>List</code> and <code>Vect</code>, look in the library files:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>libs/prelude/Prelude/List.idr</code></p>
+</li>
+<li>
+<p><code>libs/prelude/Prelude/Vect.idr</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Functions include filtering, appending, reversing, and so on.
+Also remember that <span class="logo">Idris</span> is still in development, so if you don’t see the function you need, please feel free to add it and submit a patch!</p>
+</div>
+<div id="aside-anonymous-functions-and-operator-sections" class="sidebarblock">
+<div class="content">
+<div class="title">Aside: Anonymous functions and operator sections</div>
+<div class="paragraph">
+<p>There are actually neater ways to write the above expression.
+One way would be to use an anonymous function:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>*usefultypes&gt; show (map (\x =&gt; x * 2) intVec)
+"[2, 4, 6, 8, 10]" : String</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The notation <code>\x =&gt; val</code> constructs an anonymous function which takes one argument, <code>x</code> and returns the expression <code>val</code>.
+Anonymous functions may take several arguments, separated by commas, e.g. <code>\x, y, z =&gt; val</code>.
+Arguments may also be given explicit types, e.g. <code>\x : Int =&gt; x * 2</code>, and can pattern match, e.g. <code>\(x, y) =&gt; x + y</code>.
+We could also use an operator section:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>*usefultypes&gt; show (map (* 2) intVec)
+"[2, 4, 6, 8, 10]" : String</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>(*2)</code> is shorthand for a function which multiplies a number by 2.
+It expands to <code>\x =&gt; x * 2</code>.
+Similarly, <code>(2*)</code> would expand to <code>\x =&gt; 2 * x</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="maybe">Maybe</h4>
+<div class="paragraph">
+<p><code>Maybe</code> describes an optional value.
+Either there is a value of the given type, or there isn’t:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>data Maybe a = Just a | Nothing</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>Maybe</code> is one way of giving a type to an operation that may fail.
+For example, looking something up in a <code>List</code> (rather than a vector) may result in an out of bounds error:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">list_lookup : Nat -&gt; List a -&gt; Maybe a
+list_lookup _     Nil         = Nothing
+list_lookup Z     (x :: xs) = Just x
+list_lookup (S k) (x :: xs) = list_lookup k xs</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>maybe</code> function is used to process values of type <code>Maybe</code>, either by applying a function to the value, if there is one, or by providing a default value:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>maybe : Lazy b -&gt; (a -&gt; b) -&gt; Maybe a -&gt; b</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that the type of the first argument is <code>Lazy b</code> rather than simply <code>b</code>.
+Since the default value might not be used, we mark it as <code>Lazy</code> in case it is a large expression where evaluating it then discarding it would be wasteful.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="tuples-and-dependent-pairs">Tuples and Dependent Pairs</h4>
+<div class="paragraph">
+<p>Values can be paired with the following built-in data type:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>data Pair a b = MkPair a b</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As syntactic sugar, we can write <code>(a, b)</code> which, according to context, means either <code>Pair a b</code> or <code>MkPair a b</code>.
+Tuples can contain an arbitrary number of values, represented as nested pairs:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">fred : (String, Int)
+fred = ("Fred", 42)
+
+jim : (String, Int, String)
+jim = ("Jim", 25, "Cambridge")</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="dependent-pairs">Dependent Pairs</h4>
+<div class="paragraph">
+<p>Dependent pairs allow the type of the second element of a pair to depend on the value of the first element.
+Traditionally, these are referred to as &#8220;sigma types&#8221;:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>data Sigma : (A : Type) -&gt; (P : A -&gt; Type) -&gt; Type where
+   MkSigma : {P : A -&gt; Type} -&gt; (a : A) -&gt; P a -&gt; Sigma A P</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Again, there is syntactic sugar for this.
+<code>(a : A ** P)</code> is the type of a pair of A and P, where the name <code>a</code> can occur inside <code>P</code>.
+<code>( a ** p )</code> constructs a value of this type.
+For example, we can pair a number with a <code>Vect</code> of a particular length.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>vec : (n : Nat ** Vect n Int)
+vec = (2 ** [3, 4])</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you like, you can write it out the long way, the two are precisely equivalent.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>vec : Sigma Nat (\n =&gt; Vect n Int)
+vec = MkSigma 2 [3, 4]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The type checker could of course infer the value of the first element from the length of the vector.
+We can write an underscore <code>_</code> in place of values which we expect the type checker to fill in, so the above definition could also be written as:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>vec : (n : Nat ** Vect n Int)
+vec = (_ ** [3, 4])</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We might also prefer to omit the type of the first element of the pair, since, again, it can be inferred:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>vec : (n ** Vect n Int)
+vec = (_ ** [3, 4])</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>One use for dependent pairs is to return values of dependent types where the index is not necessarily known in advance.
+For example, if we filter elements out of a <code>Vect</code> according to some predicate, we will not know in advance what the length of the resulting vector will be:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>filter : (a -&gt; Bool) -&gt; Vect n a -&gt; (p ** Vect p a)</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If the <code>Vect</code> is empty, the result is easy:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>filter p Nil = (_ ** [])</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the <code>::</code> case, we need to inspect the result of a recursive call to <code>filter</code> to extract the length and the vector from the result.
+To do this, we use <code>with</code> notation, which allows pattern matching on intermediate values:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>filter p (x :: xs) with (filter p xs)
+  | ( _ ** xs' ) = if (p x) then ( _ ** x :: xs' ) else ( _ ** xs' )</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We will see more on <code>with</code> notation later.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="more-expressions">More Expressions</h3>
+<div class="sect3">
+<h4 id="let-bindings"><code>let</code> bindings</h4>
+<div class="paragraph">
+<p>Intermediate values can be calculated using <code>let</code> bindings:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">mirror : List a -&gt; List a
+mirror xs = let xs' = reverse xs in
+                xs ++ xs'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We can do simple pattern matching in <code>let</code> bindings too.
+For example, we can extract fields from a record as follows, as well as by pattern matching at the top level:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">data Person = MkPerson String Int
+
+showPerson : Person -&gt; String
+showPerson p = let MkPerson name age = p in
+                   name ++ " is " ++ show age ++ " years old"</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="sec:listcomp">List comprehensions</h4>
+<div class="paragraph">
+<p><span class="logo">Idris</span> provides <em>comprehension</em> notation as a convenient shorthand for building lists.
+The general form is:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>[ expression | qualifiers ]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This generates the list of values produced by evaluating the <code>expression</code>, according to the conditions given by the comma separated <code>qualifiers</code>.
+For example, we can build a list of Pythagorean triples as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>pythag : Int -&gt; List (Int, Int, Int)
+pythag n = [ (x, y, z) | z &lt;- [1..n], y &lt;- [1..z], x &lt;- [1..y],
+                         x*x + y*y == z*z ]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>[a..b]</code> notation is another shorthand which builds a list of numbers between <code>a</code> and <code>b</code>.
+Alternatively <code>[a,b..c]</code> builds a list of numbers between <code>a</code> and <code>c</code> with the increment specified by the difference between <code>a</code> and <code>b</code>.
+This works for any numeric type, using the <code>count</code> function from the prelude.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="case-expressions"><code>case</code> expressions</h4>
+<div class="paragraph">
+<p>Another way of inspecting intermediate values of <em>simple</em> types is to use a <code>case</code> expression.
+The following function, for example, splits a string into two at a given character:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">splitAt : Char -&gt; String -&gt; (String, String)
+splitAt c x = case break (== c) x of
+                  (x, y) =&gt; (x, strTail y)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>break</code> is a library function which breaks a string into a pair of strings at the point where the given function returns true.
+We then deconstruct the pair it returns, and remove the first character of the second string.</p>
+</div>
+<div class="paragraph">
+<p>A <code>case</code> expression can match several cases, for example, to inspect an intermediate value of type <code>Maybe a</code>.
+Recall <code>list_lookup</code> which looks up an index in a list, returning <code>Nothing</code> if the index is out of bounds.
+We can use this to write <code>lookup_default</code>, which looks up an index and returns a default value if the index is out of bounds:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">lookup_default : Nat -&gt; List a -&gt; a -&gt; a
+lookup_default i xs def = case list_lookup i xs of
+                              Nothing =&gt; def
+                              Just x =&gt; x</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If the index is in bounds, we get the value at that index, otherwise we get a default value:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>*usefultypes&gt; lookup_default 2 [3,4,5,6] (-1)
+5 : Integer
+*usefultypes&gt; lookup_default 4 [3,4,5,6] (-1)
+-1 : Integer</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Restrictions:</strong> The <code>case</code> construct is intended for simple analysis of intermediate expressions to avoid the need to write auxiliary functions, and is also used internally to implement pattern matching <code>let</code> and lambda bindings.
+It will <em>only</em> work if:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Each branch <em>matches</em> a value of the same type, and <em>returns</em> a value of the same type.</p>
+</li>
+<li>
+<p>The type of the result is &#8220;known&#8221;.
+i.e. the type of the expression can be determined <em>without</em> type checking the <code>case</code>-expression itself.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="dependent-records">Dependent Records</h3>
+<div class="paragraph">
+<p><em>Records</em> are data types which collect several values (the record’s <em>fields</em>) together.
+<span class="logo">Idris</span> provides syntax for defining records and automatically generating field access and update functions.
+For example, we can represent a person’s name and age in a record:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">record Person : Type where
+    MkPerson : (name : String) -&gt;
+               (age : Int) -&gt; Person
+
+fred : Person
+fred = MkPerson "Fred" 30</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Record declarations are like <code>data</code> declarations, except that they are introduced by the <code>record</code> keyword, and can only have one constructor.
+The names of the binders in the constructor type (<code>name</code> and <code>age</code>) here are the field names, which we can use to access the field values:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>*record&gt; name fred
+"Fred" : String
+*record&gt; age fred
+30 : Int
+*record&gt; :t name
+name : Person -&gt; String</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We can also use the field names to update a record (or, more precisely, produce a new record with the given fields updated).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>*record&gt; record { name = "Jim" } fred
+MkPerson "Jim" 30 : Person
+*record&gt; record { name = "Jim", age = 20 } fred
+MkPerson "Jim" 20 : Person</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The syntax <code>record { field = val, ...
+}</code> generates a function which updates the given fields in a record.</p>
+</div>
+<div class="paragraph">
+<p>Records, and fields within records, can have dependent types.
+Updates are allowed to change the type of a field, provided that the result is well-typed, and the result does not affect the type of the record as a whole.
+For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>record Class : Type where
+    ClassInfo : (students : Vect n Person) -&gt;
+                (className : String) -&gt;
+                Class</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It is safe to update the <code>students</code> field to a vector of a different length because it will not affect the type of the record:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>addStudent : Person -&gt; Class -&gt; Class
+addStudent p c = record { students = p :: students c } c</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>*record&gt; addStudent fred (ClassInfo [] "CS")
+ClassInfo (prelude.vect.:: (MkPerson "Fred" 30) (prelude.vect.Nil)) "CS"
+  : Class</pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="nested-record-update">Nested record update</h4>
+<div class="paragraph">
+<p><span class="logo">Idris</span> also provides a convenient syntax for accessing and updating nested records.
+For example, if a field is accessible with the expression <code>c (b (a x))</code>, it can be updated using the following syntax:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>record { a-&gt;b-&gt;c = val } x</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This returns a new record, with the field accessed by the path <code>a-&gt;b-&gt;c</code> set to <code>x</code>.
+The syntax is first class, i.e.
+<code>record { a-&gt;b-&gt;c = val }</code> itself has a function type.
+Symmetrically, the field can also be accessed with the following syntax:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>record { a-&gt;b-&gt;c } x</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="sec:classes">Type Classes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We often want to define functions which work across several different data types.
+For example, we would like arithmetic operators to work on <code>Int</code>, <code>Integer</code> and <code>Float</code> at the very least.
+We would like <code>==</code> to work on the majority of data types.
+We would like to be able to display different types in a uniform way.</p>
+</div>
+<div class="paragraph">
+<p>To achieve this, we use a feature which has proved to be effective in Haskell, namely <em>type classes</em>.
+To define a type class, we provide a collection of overloaded operations which describe the interface for <em>instances</em> of that class.
+A simple example is the <code>Show</code> type class, which is defined in the prelude and provides an interface for converting values to <code>String</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">class Show a where
+    show : a -&gt; String</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This generates a function of the following type (which we call a <em>method</em> of the <code>Show</code> class):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>show : Show a =&gt; a -&gt; String</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We can read this as: &#8220;under the constraint that <code>a</code> is an instance of <code>Show</code>, take an input <code>a</code> and return a <code>String</code>.&#8221; An instance of a class is defined with an <code>instance</code> declaration, which provides implementations of the function for a specific type.
+For example, the <code>Show</code> instance for <code>Nat</code> could be defined as:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">instance Show Nat where
+    show Z = "Z"
+    show (S k) = "s" ++ show k</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Idris&gt; show (S (S (S Z)))
+"sssZ" : String</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Only one instance of a class can be given for a type — instances may not overlap.
+Instance declarations can themselves have constraints.
+For example, to define a <code>Show</code> instance for vectors, we need to know that there is a <code>Show</code> instance for the element type, because we are going to use it to convert each element to a <code>String</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">instance Show a =&gt; Show (Vect n a) where
+    show xs = "[" ++ show' xs ++ "]" where
+        show' : Vect n a -&gt; String
+        show' Nil        = ""
+        show' (x :: Nil) = show x
+        show' (x :: xs)  = show x ++ ", " ++ show' xs</code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="default-definitions">Default Definitions</h3>
+<div class="paragraph">
+<p>The library defines an <code>Eq</code> class which provides an interface for comparing values for equality or inequality, with instances for all of the built-in types:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">class Eq a where
+    (==) : a -&gt; a -&gt; Bool
+    (/=) : a -&gt; a -&gt; Bool</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To declare an instance of a type, we have to give definitions of all of the methods.
+For example, for an instance of <code>Eq</code> for <code>Nat</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">instance Eq Nat where
+    Z     == Z     = True
+    (S x) == (S y) = x == y
+    Z     == (S y) = False
+    (S x) == Z     = False
+
+    x /= y = not (x == y)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It is hard to imagine many cases where the <code>/=</code> method will be anything other than the negation of the result of applying the <code>==</code> method.
+It is therefore convenient to give a default definition for each method in the class declaration, in terms of the other method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>class Eq a where
+    (==) : a -&gt; a -&gt; Bool
+    (/=) : a -&gt; a -&gt; Bool
+
+    x /= y = not (x == y)
+    x == y = not (x /= y)</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A minimal complete definition of an <code>Eq</code> instance requires either <code>==</code> or <code>/=</code> to be defined, but does not require both.
+If a method definition is missing, and there is a default definition for it, then the default is used instead.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="extending-classes">Extending Classes</h3>
+<div class="paragraph">
+<p>Classes can also be extended.
+A logical next step from an equality relation <code>Eq</code> is to define an ordering relation <code>Ord</code>.
+We can define an <code>Ord</code> class which inherits methods from <code>Eq</code> as well as defining some of its own:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>data Ordering = LT | EQ | GT</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>class Eq a =&gt; Ord a where
+    compare : a -&gt; a -&gt; Ordering
+
+    (&lt;) : a -&gt; a -&gt; Bool
+    (&gt;) : a -&gt; a -&gt; Bool
+    (&lt;=) : a -&gt; a -&gt; Bool
+    (&gt;=) : a -&gt; a -&gt; Bool
+    max : a -&gt; a -&gt; a
+    min : a -&gt; a -&gt; a</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>Ord</code> class allows us to compare two values and determine their ordering.
+Only the <code>compare</code> method is required; every other method has a default definition.
+Using this we can write functions such as <code>sort</code>, a function which sorts a list into increasing order, provided that the element type of the list is in the <code>Ord</code> class.
+We give the constraints on the type variables left of the fat arrow <code>=&gt;</code>, and the function type to the right of the fat arrow:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>sort : Ord a =&gt; List a -&gt; List a</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Functions, classes and instances can have multiple constraints.
+Multiple constaints are written in brackets in a comma separated list, for example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>sortAndShow : (Ord a, Show a) =&gt; List a -&gt; String
+sortAndShow xs = show (sort xs)</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="sec:functor">Functors and Applicatives</h3>
+<div class="paragraph">
+<p>So far, we have seen single parameter type classes, where the parameter is of type <code>Type</code>.
+In general, there can be any number (greater than 0) of parameters, and the parameters can have <em>any</em> type.
+If the type of the parameter is not <code>Type</code>, we need to give an explicit type declaration.
+For example, the <code>Functor</code> class is defined in the library:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>class Functor (f : Type -&gt; Type) where
+    map : (m : a -&gt; b) -&gt; f a -&gt; f b</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A functor allows a function to be applied across a structure, for example to apply a function to every element in a <code>List</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>instance Functor List where
+  map f []      = []
+  map f (x::xs) = f x :: map f xs</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Idris&gt; map (*2) [1..10]
+[2, 4, 6, 8, 10, 12, 14, 16, 18, 20] : List Integer</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Having defined <code>Functor</code>, we can define <code>Applicative</code> which abstracts the notion of function application:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>infixl 2 &lt;$&gt;
+
+class Functor f =&gt; Applicative (f : Type -&gt; Type) where
+    pure  : a -&gt; f a
+    (&lt;$&gt;) : f (a -&gt; b) -&gt; f a -&gt; f b</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="sec:monad">Monads and <code>do</code>-notation</h3>
+<div class="paragraph">
+<p>The <code>Monad</code> class allows us to encapsulate binding and computation, and is the basis of <code>do</code>-notation introduced in Section <a href="#sect:do"><code>“do”</code> notation</a>.
+It extends <code>Applicative</code> as defined above, and is defined as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>class Applicative m =&gt; Monad (m : Type -&gt; Type) where
+    (&gt;&gt;=)  : m a -&gt; (a -&gt; m b) -&gt; m b</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Inside a <code>do</code> block, the following syntactic transformations are applied:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>x &lt;- v; e</code> becomes <code>v &gt;&gt;= (\backslashx =&gt; e)</code></p>
+</li>
+<li>
+<p><code>v; e</code> becomes <code>v &gt;&gt;= (\backslash_ =&gt; e)</code></p>
+</li>
+<li>
+<p><code>let x = v; e</code> becomes <code>let x = v in e</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><code>IO</code> is an instance of <code>Monad</code>, defined using primitive functions.
+We can also define an instance for <code>Maybe</code>, as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>instance Monad Maybe where
+    Nothing  &gt;&gt;= k = Nothing
+    (Just x) &gt;&gt;= k = k x</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Using this we can, for example, define a function which adds two `Maybe Int`s, using the monad to encapsulate the error handling:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>m_add : Maybe Int -&gt; Maybe Int -&gt; Maybe Int
+m_add x y = do x' &lt;- x -- Extract value from x
+               y' &lt;- y -- Extract value from y
+               return (x' + y') -- Add them</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This function will extract the values from <code>x</code> and <code>y</code>, if they are available, or return <code>Nothing</code> if they are not.
+Managing the <code>Nothing</code> cases is achieved by the <code>&gt;&gt;=</code> operator, hidden by the <code>do</code> notation.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>*classes&gt; m_add (Just 20) (Just 22)
+Just 42 : Maybe Int
+*classes&gt; m_add (Just 20) Nothing
+Nothing : Maybe Int</pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="notation"><code>!</code>-notation</h4>
+<div class="paragraph">
+<p>In many cases, using <code>do</code>-notation can make programs unnecessarily verbose, particularly in cases such as <code>m_add</code> above where the value bound is used once, immediately.
+In these cases, we can use a shorthand version, as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>m_add : Maybe Int -&gt; Maybe Int -&gt; Maybe Int
+m_add x y = return (!x + !y)</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The notation <code>!expr</code> means that the expression <code>expr</code> should be evaluated and then implicitly bound.
+Conceptually, we can think of <code>!</code> as being a prefix function with the following type:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(!) : m a -&gt; a</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note, however, that it is not really a function, merely syntax! In practice, a subexpression <code>!expr</code> will lift <code>expr</code> as high as possible within its current scope, bind it to a fresh name <code>x</code>, and replace <code>!expr</code> with <code>x</code>.
+Expressions are lifted depth first, left to right.
+In practice, <code>!</code>-notation allows us to program in a more direct style, while still giving a notational clue as to which expressions are monadic.</p>
+</div>
+<div class="paragraph">
+<p>For example, the expression…</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>let y = 42 in f !(g !(print y) !x)</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>…is lifted to:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>let y = 42 in do y' &lt;- print y
+                 x' &lt;- x
+                 g' &lt;- g y' x'
+                 f g'</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="monad-comprehensions">Monad comprehensions</h4>
+<div class="paragraph">
+<p>The list comprehension notation we saw in Section <a href="#sec:listcomp">List comprehensions</a> is more general, and applies to anything which is an instance of both <code>Monad</code> and <code>Alternative</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>class Applicative f =&gt; Alternative (f : Type -&gt; Type) where
+    empty : f a
+    (&lt;|&gt;) : f a -&gt; f a -&gt; f a</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In general, a comprehension takes the form <code>[ exp | qual1, qual2, …, qualn ]</code> where <code>quali</code> can be one of:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A generator <code>x &lt;- e</code></p>
+</li>
+<li>
+<p>A <em>guard</em>, which is an expression of type <code>Bool</code></p>
+</li>
+<li>
+<p>A let binding <code>let x = e</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To translate a comprehension <code>[exp | qual1, qual2, …, qualn]</code>, first any qualifier <code>qual</code> which is a <em>guard</em> is translated to <code>guard qual</code>, using the following function:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>guard : Alternative f =&gt; Bool -&gt; f ()</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then the comprehension is converted to <code>do</code> notation:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>do { qual1; qual2; ...; qualn; return exp; }</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Using monad comprehensions, an alternative definition for <code>m_add</code> would be:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>m_add : Maybe Int -&gt; Maybe Int -&gt; Maybe Int
+m_add x y = [ x' + y' | x' &lt;- x, y' &lt;- y ]</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="idiom-brackets">Idiom brackets</h3>
+<div class="paragraph">
+<p>While <code>do</code> notation gives an alternative meaning to sequencing, idioms give an alternative meaning to <em>application</em>.
+The notation and larger example in this section is inspired by Conor McBride and Ross Paterson’s paper &#8220;Applicative Programming with Effects&#8221; <a href="#idioms">[idioms]</a>.</p>
+</div>
+<div class="paragraph">
+<p>First, let us revisit <code>m_add</code> above.
+All it is really doing is applying an operator to two values extracted from <code>Maybe Int</code>’s.
+We could abstract out the application:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>m_app : Maybe (a -&gt; b) -&gt; Maybe a -&gt; Maybe b
+m_app (Just f) (Just a) = Just (f a)
+m_app _        _        = Nothing</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Using this, we can write an alternative <code>m_add</code> which uses this alternative notion of function application, with explicit calls to <code>m_app</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>m_add' : Maybe Int -&gt; Maybe Int -&gt; Maybe Int
+m_add' x y = m_app (m_app (Just (+)) x) y</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Rather than having to insert <code>m_app</code> everywhere there is an application, we can use to do the job for us.
+To do this, we can make <code>Maybe</code> an instance of <code>Applicative</code> as follows, where <code>&lt;$&gt;</code> is defined in the same way as <code>m_app</code> above (this is defined in the <span class="logo">Idris</span> library):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>instance Applicative Maybe where
+    pure = Just
+
+    (Just f) &lt;$&gt; (Just a) = Just (f a)
+    _        &lt;$&gt; _        = Nothing</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Using <em>idiom brackets</em> we can use this instance as follows, where a function application <code>[| f a1 ...an |]</code> is translated into <code>pure f &lt;$&gt; a1 &lt;$&gt; ...&lt;$&gt; an</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>m_add' : Maybe Int -&gt; Maybe Int -&gt; Maybe Int
+m_add' x y = [| x + y |]</pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="an-error-handling-interpreter">An error-handling interpreter</h4>
+<div class="paragraph">
+<p>Idiom notation is commonly useful when defining evaluators.
+McBride and Paterson describe such an evaluator <a href="#idioms">[idioms]</a>, for a language similar to the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>data Expr = Var String      -- variables
+          | Val Int         -- values
+          | Add Expr Expr   -- addition</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Evaluation will take place relative to a context mapping variables (represented as <code>String</code> s) to integer values, and can possibly fail.
+We define a data type <code>Eval</code> to wrap an evaluator:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>data Eval : Type -&gt; Type where
+     MkEval : (List (String, Int) -&gt; Maybe a) -&gt; Eval a</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Wrapping the evaluator in a data type means we will be able to make it an instance of a type class later.
+We begin by defining a function to retrieve values from the context during evaluation:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>fetch : String -&gt; Eval Int
+fetch x = MkEval (\e =&gt; fetchVal e) where
+    fetchVal : List (String, Int) -&gt; Maybe Int
+    fetchVal [] = Nothing
+    fetchVal ((v, val) :: xs) = if (x == v)
+                                  then (Just val)
+                                  else (fetchVal xs)</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When defining an evaluator for the language, we will be applying functions in the context of an <code>Eval</code>, so it is natural to make <code>Eval</code> an instance of <code>Applicative</code>.
+Before <code>Eval</code> can be an instance of <code>Applicative</code> it is necessary to make <code>Eval</code> an instance of <code>Functor</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>instance Functor Eval where
+    map f (MkEval g) = MkEval (\e =&gt; map f (g e))
+
+instance Applicative Eval where
+    pure x = MkEval (\e =&gt; Just x)
+
+    (&lt;$&gt;) (MkEval f) (MkEval g) = MkEval (\x =&gt; app (f x) (g x)) where
+        app : Maybe (a -&gt; b) -&gt; Maybe a -&gt; Maybe b
+        app (Just fx) (Just gx) = Just (fx gx)
+        app _         _         = Nothing</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Evaluating an expression can now make use of the idiomatic application to handle errors:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>eval : Expr -&gt; Eval Int
+eval (Var x)   = fetch x
+eval (Val x)   = [| x |]
+eval (Add x y) = [| eval x + eval y |]
+
+runEval : List (String, Int) -&gt; Expr -&gt; Maybe Int
+runEval env e = case eval e of
+    MkEval envFn =&gt; envFn env</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="named-instances">Named Instances</h3>
+<div class="paragraph">
+<p>It can be desirable to have multiple instances of a type class, for example to provide alternative methods for sorting or printing values.
+To achieve this, instances can be as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>instance [myord] Ord Nat where
+   compare Z (S n)     = GT
+   compare (S n) Z     = LT
+   compare Z Z         = EQ
+   compare (S x) (S y) = compare @{myord} x y</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This declares an instance as normal, but with an explicit name, <code>myord</code>.
+The syntax <code>compare @{myord}</code> gives an explicit instance to <code>compare</code>, otherwise it would use the default instance for <code>Nat</code>.
+We can use this, for example, to sort a list of `Nat`s in reverse.
+Given the following list:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>testList : List Nat
+testList = [3,4,1]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>…we can sort it using the default <code>Ord</code> instance, then the named instance <code>myord</code> as follows, at the <span class="logo">Idris</span> prompt:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>*named_instance&gt; show (sort testList)
+"[sO, sssO, ssssO]" : String
+*named_instance&gt; show (sort @{myord} testList)
+"[ssssO, sssO, sO]" : String</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="sect:namespaces">Modules and Namespaces</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>An <span class="logo">Idris</span> program consists of a collection of modules.
+Each module includes an optional <code>module</code> declaration giving the name of the module, a list of <code>import</code> statements giving the other modules which are to be imported, and a collection of declarations and definitions of types, classes and functions.
+For example, <a href="#bstmod">Listing 2: Binary Tree Module</a> gives a module which defines a binary tree type <code>BTree</code> (in a file <code>btree.idr</code>) and <a href="#bstmain">Listing 3: Binary Tree Main Program</a> gives a main program (in a file <code>bmain.idr</code> which uses the <code>bst</code> module to sort a list.</p>
+</div>
+<div id="bstmod" class="listingblock">
+<div class="title">Listing 2: Binary Tree Module</div>
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">module btree
+
+data BTree a = Leaf
+             | Node (BTree a) a (BTree a)
+
+insert : Ord a =&gt; a -&gt; BTree a -&gt; BTree a
+insert x Leaf = Node Leaf x Leaf
+insert x (Node l v r) = if (x &lt; v) then (Node (insert x l) v r)
+                                   else (Node l v (insert x r))
+
+toList : BTree a -&gt; List a
+toList Leaf = []
+toList (Node l v r) = btree.toList l ++ (v :: btree.toList r)
+
+toTree : Ord a =&gt; List a -&gt; BTree a
+toTree [] = Leaf
+toTree (x :: xs) = insert x (toTree xs)</code></pre>
+</div>
+</div>
+<div id="bstmain" class="listingblock">
+<div class="title">Listing 3: Binary Tree Main Program</div>
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">module Main
+
+import btree
+
+main : IO ()
+main = do let t = toTree [1,8,2,7,9,3]
+          print (btree.toList t)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The same names can be defined in multiple modules.
+This is possible because in practice names are <em>qualified</em> with the name of the module.
+The names defined in the <code>btree</code> module are, in full:</p>
+</div>
+<table class="tableblock frame-none grid-none spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div><div class="ulist">
+<ul>
+<li>
+<p><code>btree.BTree</code>,</p>
+</li>
+<li>
+<p><code>btree.Leaf</code>,</p>
+</li>
+<li>
+<p><code>btree.Node</code>,</p>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div><div class="ulist">
+<ul>
+<li>
+<p><code>btree.insert</code>,</p>
+</li>
+<li>
+<p><code>btree.toList</code>,</p>
+</li>
+<li>
+<p><code>btree.toTree</code>.</p>
+</li>
+</ul>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>If names are otherwise unambiguous, there is no need to give the fully qualified name.
+Names can be disambiguated either by giving an explicit qualification, or according to their type.</p>
+</div>
+<div class="paragraph">
+<p>There is no formal link between the module name and its filename, although it is generally advisable to use the same name for each.
+An <code>import</code> statement refers to a filename, using dots to separate directories.
+For example, <code>import foo.bar</code> would import the file <code>foo/bar.idr</code>, which would conventionally have the module declaration <code>module foo.bar</code>.
+The only requirement for module names is that the main module, with the <code>main</code> function, must be called <code>Main</code>—although its filename need not be <code>Main.idr</code>.</p>
+</div>
+<div class="sect2">
+<h3 id="export-modifiers">Export Modifiers</h3>
+<div class="paragraph">
+<p>By default, all names defined in a module are exported for use by other modules.
+However, it is good practice only to export a minimal interface and keep internal details abstract.
+<span class="logo">Idris</span> allows functions, types, and classes to be marked as: <code>public</code>, <code>abstract</code> or <code>private</code>:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>public</code> means that both the name and definition are exported.
+For functions, this means that the implementation is exported (which means, for example, it can be used in a dependent type).
+For data types, this means that the type name and the constructors are exported.
+For classes, this means that the class name and method names are exported.</p>
+</li>
+<li>
+<p><code>abstract</code> means that only the name is exported.
+For functions, this means that the implementation is not exported.
+For data types, this means that the type name is exported but not the constructors.
+For classes, this means that the class name is exported but not the method names.</p>
+</li>
+<li>
+<p><code>private</code> means that neither the name nor the definition is exported.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Note:</strong> If any definition is given an export modifier, then all names with no modifier are assumed to be <code>private</code>.</p>
+</div>
+<div class="paragraph">
+<p>For our <code>btree</code> module, it makes sense for the tree data type and the functions to be exported as <code>abstract</code>, as we see in <a href="#bstmodp">Listing 4: Binary Tree Module, with export modifiers</a>.</p>
+</div>
+<div id="bstmodp" class="listingblock">
+<div class="title">Listing 4: Binary Tree Module, with export modifiers</div>
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">module btree
+
+abstract data BTree a = Leaf
+                      | Node (BTree a) a (BTree a)
+
+abstract
+insert : Ord a =&gt; a -&gt; BTree a -&gt; BTree a
+insert x Leaf = Node Leaf x Leaf
+insert x (Node l v r) = if (x &lt; v) then (Node (insert x l) v r)
+                                   else (Node l v (insert x r))
+
+abstract
+toList : BTree a -&gt; List a
+toList Leaf = []
+toList (Node l v r) = btree.toList l ++ (v :: btree.toList r)
+
+abstract
+toTree : Ord a =&gt; List a -&gt; BTree a
+toTree [] = Leaf
+toTree (x :: xs) = insert x (toTree xs)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Finally, the default export mode can be changed with the <code>%access</code> directive, for example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>%access abstract</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this case, any function with no access modifier will be exported as <code>abstract</code>, rather than left <code>private</code>.</p>
+</div>
+<div class="paragraph">
+<p>Additionally, a module can re-export a module it has imported, by using the <code>public</code> modifier on an <code>import</code>.
+For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>module A
+
+import B
+import public C
+
+public a : AType
+a = ...</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The module <code>A</code> will export the name <code>a</code>, as well as any public or abstract names in module <code>C</code>, but will not re-export anything from module <code>B</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="explicit-namespaces">Explicit Namespaces</h3>
+<div class="paragraph">
+<p>Defining a module also defines a namespace implicitly.
+However, namespaces can also be given <em>explicitly</em>.
+This is most useful if you wish to overload names within the same module:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">module foo
+
+namespace x
+  test : Int -&gt; Int
+  test x = x * 2
+
+namespace y
+  test : String -&gt; String
+  test x = x ++ x</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This (admittedly contrived) module defines two functions with fully qualified names <code>foo.x.test</code> and <code>foo.y.test</code>, which can be disambiguated by their types:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>*foo&gt; test 3
+6 : Int
+*foo&gt; test "foo"
+"foofoo" : String</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="parameterised-blocks">Parameterised blocks</h3>
+<div class="paragraph">
+<p>Groups of functions can be parameterised over a number of arguments using a <code>parameters</code> declaration, for example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>parameters (x : Nat, y : Nat)
+    addAll : Nat -&gt; Nat
+    addAll z = x + y + z</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The effect of a <code>parameters</code> block is to add the declared parameters to every function, type and data constructor within the block.
+Outside the block, the parameters must be given explicitly:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>*params&gt; :t addAll
+addAll : Nat -&gt; Nat -&gt; Nat -&gt; Nat</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Parameters blocks can be nested, and can also include data declarations, in which case the parameters are added explicitly to all type and data constructors.
+They may also be dependent types with implicit arguments:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>parameters (y : Nat, xs : Vect x a)
+    data Vects : Type -&gt; Type where
+         MkVects : Vect y a -&gt; Vects a
+
+    append : Vects a -&gt; Vect (x + y) a
+    append (MkVects ys) = xs ++ ys</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To use <code>Vects</code> or <code>append</code> outside the block, we must also give the <code>xs</code> and <code>y</code> arguments.
+Here, we can use placeholders for the values which can be inferred by the type checker:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>*params&gt; show (append _ _ (MkVects _ [1,2,3] [4,5,6]))
+"[1, 2, 3, 4, 5, 6]" : String</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="sect:interp">Example: The Well-Typed Interpreter</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In this section, we’ll use the features we’ve seen so far to write a larger example, an interpreter for a simple functional programming language, with variables, function application, binary operators and an <code>if...then...else</code> construct.
+We will use the dependent type system to ensure that any programs which can be represented are well-typed.</p>
+</div>
+<div class="sect2">
+<h3 id="sect:interp:representation">Representing Languages</h3>
+<div class="paragraph">
+<p>First, let us define the types in the language.
+We have integers, booleans, and functions, represented by <code>Ty</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>data Ty = TyInt | TyBool | TyFun Ty Ty</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We can write a function to translate these representations to a concrete <span class="logo">Idris</span> type — remember that types are first class, so can be calculated just like any other value:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>interpTy : Ty -&gt; Type
+interpTy TyInt       = Int
+interpTy TyBool      = Bool
+interpTy (TyFun A T) = interpTy A -&gt; interpTy T</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We’re going to define a representation of our language in such a way that only well-typed programs can be represented.
+We’ll index the representations of expressions by their type and the types of local variables (the context), which we’ll be using regularly as an implicit argument, so we define everything in a <code>using</code> block:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>using (G:Vect n Ty)</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The full representation of expressions is given in <a href="#exprty">Listing: Expression representation</a>.
+They are indexed by the types of the local variables, and the type of the expression itself:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>data Expr : Vect n Ty -&gt; Ty -&gt; Type</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Since expressions are indexed by their type, we can read the typing rules of the language from the definitions of the constructors.
+Let us look at each constructor in turn.</p>
+</div>
+<div id="exprty" class="listingblock">
+<div class="title">Listing: Expression representation</div>
+<div class="content">
+<pre>data HasType : (i : Fin n) -&gt; Vect n Ty -&gt; Ty -&gt; Type where
+    Stop : HasType FZ (t :: G) t
+    Pop  : HasType k G t -&gt; HasType (FS k) (u :: G) t
+
+data Expr : Vect n Ty -&gt; Ty -&gt; Type where
+    Var : HasType i G t -&gt; Expr G t
+    Val : (x : Int) -&gt; Expr G TyInt
+    Lam : Expr (a :: G) t -&gt; Expr G (TyFun a t)
+    App : Expr G (TyFun a t) -&gt; Expr G a -&gt; Expr G t
+    Op  : (interpTy a -&gt; interpTy b -&gt; interpTy c) -&gt;
+          Expr G a -&gt; Expr G b -&gt; Expr G c
+    If  : Expr G TyBool -&gt;
+          Lazy (Expr G a) -&gt;
+          Lazy (Expr G a) -&gt; Expr G a</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We use a nameless representation for variables — they are <em>de Bruijn indexed</em>.
+Variables are represented by a proof of their membership in the context, <code>HasType i G T</code>, which is a proof that variable <code>i</code> in context <code>G</code> has type <code>T</code>.
+This is defined as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>data HasType : (i : Fin n) -&gt; Vect n Ty -&gt; Ty -&gt; Type where
+    Stop : HasType FZ (t :: G) t
+    Pop  : HasType k G t -&gt; HasType (FS k) (u :: G) t</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We can treat <em>Stop</em> as a proof that the most recently defined variable is well-typed, and <em>Pop n</em> as a proof that, if the <code>n`th most recently defined variable is well-typed, so is the `n+1`th.
+In practice, this means we use `Stop</code> to refer to the most recently defined variable, <code>Pop Stop</code> to refer to the next, and so on, via the <code>Var</code> constructor:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Var : HasType i G t -&gt; Expr G t</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>So, in an expression <code>\x,\y.
+x y</code>, the variable <code>x</code> would have a de Bruijn index of 1, represented as <code>Pop Stop</code>, and <code>y 0</code>, represented as <code>Stop</code>.
+We find these by counting the number of lambdas between the definition and the use.</p>
+</div>
+<div class="paragraph">
+<p>A value carries a concrete representation of an integer:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Val : (x : Int) -&gt; Expr G TyInt</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A lambda creates a function.
+In the scope of a function of type <code>a -&gt; t</code>, there is a new local variable of type <code>a</code>, which is expressed by the context index:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Lam : Expr (a :: G) t -&gt; Expr G (TyFun a t)</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Function application produces a value of type <code>t</code> given a function from <code>a</code> to <code>t</code> and a value of type <code>a</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>App : Expr G (TyFun a t) -&gt; Expr G a -&gt; Expr G t</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We allow arbitrary binary operators, where the type of the operator informs what the types of the arguments must be:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Op : (interpTy a -&gt; interpTy b -&gt; interpTy c) -&gt;
+     Expr G a -&gt; Expr G b -&gt; Expr G c</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Finally, if expressions make a choice given a boolean.
+Each branch must have the same type, and we will evaluate the branches lazily so that only the branch which is taken need be evaluated:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>If : Expr G TyBool -&gt;
+     Lazy (Expr G a) -&gt;
+     Lazy (Expr G a) -&gt;
+     Expr G a</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="sec:interp:eval">Writing the Interpreter</h3>
+<div class="paragraph">
+<p>When we evaluate an <code>Expr</code>, we’ll need to know the values in scope, as well as their types.
+<code>Env</code> is an environment, indexed over the types in scope.
+Since an environment is just another form of list, albeit with a strongly specified connection to the vector of local variable types, we use the usual <code>::</code> and <code>Nil</code> constructors so that we can use the usual list syntax.
+Given a proof that a variable is defined in the context, we can then produce a value from the environment:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>data Env : Vect n Ty -&gt; Type where
+    Nil  : Env Nil
+    (::) : interpTy a -&gt; Env G -&gt; Env (a :: G)
+
+lookup : HasType i G t -&gt; Env G -&gt; interpTy t
+lookup Stop    (x :: xs) = x
+lookup (Pop k) (x :: xs) = lookup k xs</pre>
+</div>
+</div>
+<div id="interpdef" class="listingblock">
+<div class="title">Listing: Intepreter definition</div>
+<div class="content">
+<pre>interp : Env G -&gt; Expr G t -&gt; interpTy t
+interp env (Var i)     = lookup i env
+interp env (Val x)     = x
+interp env (Lam sc)    = \x =&gt; interp (x :: env) sc
+interp env (App f s)   = interp env f (interp env s)
+interp env (Op op x y) = op (interp env x) (interp env y)
+interp env (If x t e)  = if interp env x then interp env t
+                                         else interp env e</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Given this, an interpreter (<a href="#interpdef">Listing: Intepreter definition</a>) is a function which translates an <code>Expr</code> into a concrete <span class="logo">Idris</span> value with respect to a specific environment:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>interp : Env G -&gt; Expr G t -&gt; interpTy t</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To translate a variable, we simply look it up in the environment:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>interp env (Var i) = lookup i env</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To translate a value, we just return the concrete representation of the value:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>interp env (Val x) = x</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Lambdas are more interesting.
+In this case, we construct a function which interprets the scope of the lambda with a new value in the environment.
+So, a function in the object language is translated to an <span class="logo">Idris</span> function:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>interp env (Lam sc) = \x =&gt; interp (x :: env) sc</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For an application, we interpret the function and its argument and apply it directly.
+We know that interpreting <code>f</code> must produce a function, because of its type:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>interp env (App f s) = interp env f (interp env s)</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Operators and interpreters are, again, direct translations into the equivalent <span class="logo">Idris</span> constructs.
+For operators, we apply the function to its operands directly, and for <code>If</code>, we apply the <span class="logo">Idris</span> <code>if...then...else</code> construct directly.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>interp env (Op op x y) = op (interp env x) (interp env y)
+interp env (If x t e)  = if interp env x then interp env t
+                                         else interp env e</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="sec:interp:testing">Testing</h3>
+<div class="paragraph">
+<p>We can make some simple test functions.
+Firstly, adding two inputs <code>\x.
+\y.
+y + x</code> is written as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>add : Expr G (TyFun TyInt (TyFun TyInt TyInt))
+add = Lam (Lam (Op (+) (Var Stop) (Var (Pop Stop))))</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>More interestingly, a factorial function <code>fact</code> (e.g. <code>\textbackslashx.
+if (x == 0) then 1 else (fact (x-1) * x)</code>), can be written as:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>fact : Expr G (TyFun TyInt TyInt)
+fact = Lam (If (Op (==) (Var Stop) (Val 0))
+               (Val 1)
+               (Op (*) (App fact (Op (-) (Var Stop) (Val 1)))
+                       (Var Stop)))</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="sec:interp:running">Running</h3>
+<div class="paragraph">
+<p>To finish, we write a <code>main</code> program which interprets the factorial function on user input:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>main : IO ()
+main = do putStr "Enter a number: "
+          x &lt;- getLine
+          print (interp [] fact (cast x))</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Here, <code>cast</code> is an overloaded function which converts a value from one type to another if possible.
+Here, it converts a string to an integer, giving 0 if the input is invalid.
+An example run of this program at the <span class="logo">Idris</span> interactive environment is shown in <a href="#factrun">Listing 5: Running the well-typed interpreter</a>.</p>
+</div>
+<div id="factrun" class="listingblock">
+<div class="title">Listing 5: Running the well-typed interpreter</div>
+<div class="content">
+<pre>$ idris interp.idr
+     ____    __     _
+    /  _/___/ /____(_)____
+    / // __  / ___/ / ___/     Version 0.9.16
+  _/ // /_/ / /  / (__  )      http://www.idris-lang.org/
+ /___/\__,_/_/  /_/____/       Type :? for help
+
+Type checking ./interp.idr
+*interp&gt; :exec
+Enter a number: 6
+720
+*interp&gt;</pre>
+</div>
+</div>
+<div id="aside-cast" class="sidebarblock">
+<div class="content">
+<div class="title">Aside: <code>cast</code></div>
+<div class="paragraph">
+<p>The prelude defines a type class <code>Cast</code> which allows conversion between types:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>class Cast from to where
+    cast : from -&gt; to</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It is a <em>multi-parameter</em> type class, defining the source type and object type of the cast.
+It must be possible for the type checker to infer <em>both</em> parameters at the point where the cast is applied.
+There are casts defined between all of the primitive types, as far as they make sense.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="views-and-the-with-rule">Views and the <code>“with”</code> rule</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="dependent-pattern-matching">Dependent pattern matching</h3>
+<div class="paragraph">
+<p>Since types can depend on values, the form of some arguments can be determined by the value of others.
+For example, if we were to write down the implicit length arguments to <code>(++)</code>, we’d see that the form of the length argument was determined by whether the vector was empty or not:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(++) : Vect n a -&gt; Vect m a -&gt; Vect (n + m) a
+(++) {n=Z}   []        ys = ys
+(++) {n=S k} (x :: xs) ys = x :: xs ++ ys</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If <code>n</code> was a successor in the <code>[]</code> case, or zero in the <code>::</code> case, the definition would not be well typed.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="the-with-rule-matching-intermediate-values">The <code>with</code> rule — matching intermediate values</h3>
+<div class="paragraph">
+<p>Very often, we need to match on the result of an intermediate computation.
+<span class="logo">Idris</span> provides a construct for this, the <code>with</code> rule, inspired by views in <span class="epigram">Epigram</span> <a href="#view-left">[view-left]</a>, which takes account of the fact that matching on a value in a dependently typed language can affect what we know about the forms of other values.
+In its simplest form, the <code>with</code> rule adds another argument to the function being defined, e.g. we have already seen a vector filter function, defined as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>filter : (a -&gt; Bool) -&gt; Vect n a -&gt; (p ** Vect p a)
+filter p [] = ( _ ** [] )
+filter p (x :: xs) with (filter p xs)
+  | ( _ ** xs' ) = if (p x) then ( _ ** x :: xs' ) else ( _ ** xs' )</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Here, the <code>with</code> clause allows us to deconstruct the result of <code>filter p xs</code>.
+Effectively, it adds this value as an extra argument, which we place after the vertical bar.</p>
+</div>
+<div class="paragraph">
+<p>If the intermediate computation itself has a dependent type, then the result can affect the forms of other arguments — we can learn the form of one value by testing another.
+For example, a <code>Nat</code> is either even or odd.
+If it’s even it will be the sum of two equal `Nat`s.
+Otherwise, it is the sum of two equal `Nat`s plus one:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>data Parity : Nat -&gt; Type where
+   Even : Parity (n + n)
+   Odd  : Parity (S (n + n))</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We say <code>Parity</code> is a <em>view</em> of <code>Nat</code>.
+It has a <em>covering function</em> which tests whether it is even or odd and constructs the predicate accordingly.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>parity : (n:Nat) -&gt; Parity n</pre>
+</div>
+</div>
+<div id="sect:nattobin" class="paragraph">
+<p>We’ll come back to the definition of <code>parity</code> shortly.
+We can use it to write a function which converts a natural number to a list of binary digits (least significant first) as follows, using the <code>with</code> rule:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>natToBin : Nat -&gt; List Bool
+natToBin Z = Nil
+natToBin k with (parity k)
+   natToBin (j + j)     | Even = False :: natToBin j
+   natToBin (S (j + j)) | Odd  = True  :: natToBin j</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The value of the result of <code>parity k</code> affects the form of <code>k</code>, because the result of <code>parity k</code> depends on <code>k</code>.
+So, as well as the patterns for the result of the intermediate computation (<code>Even</code> and <code>odd</code>) right of the <code>\mid</code>, we also write how the results affect the other patterns left of the \($\mid$\).
+Note that there is a function in the patterns (<code>+</code>) and repeated occurrences of <code>j</code>—this is allowed because another argument has determined the form of these patterns.</p>
+</div>
+<div class="paragraph">
+<p>We will return to this function in Section <a href="#sect:provisional">Provisional Definitions</a> to complete the definition of <code>parity</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="theorem-proving">Theorem Proving</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="equality">Equality</h3>
+<div class="paragraph">
+<p><span class="logo">Idris</span> allows propositional equalities to be declared, allowing theorems about programs to be stated and proved.
+Equality is built in, but conceptually has the following definition:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>data (=) : a -&gt; b -&gt; Type where
+   Refl : x = x</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Equalities can be proposed between any values of any types, but the only way to construct a proof of equality is if values actually are equal.
+For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>fiveIsFive : 5 = 5
+fiveIsFive = Refl
+
+twoPlusTwo : 2 + 2 = 4
+twoPlusTwo = Refl</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="sect:empty">The Empty Type</h3>
+<div class="paragraph">
+<p>There is an empty type, \(\bot\), which has no constructors.
+It is therefore impossible to construct an element of the empty type, at least without using a partially defined or general recursive function (see Section <a href="#sect:totality">Totality Checking</a> for more details).
+We can therefore use the empty type to prove that something is impossible, for example zero is never equal to a successor:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>disjoint : (n : Nat) -&gt; Z = S n -&gt; Void
+disjoint n p = replace {P = disjointTy} p ()
+  where
+    disjointTy : Nat -&gt; Type
+    disjointTy Z = ()
+    disjointTy (S k) = Void</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>There is no need to worry too much about how this function works — essentially, it applies the library function <code>replace</code>, which uses an equality proof to transform a predicate.
+Here we use it to transform a value of a type which can exist, the empty tuple, to a value of a type which can’t, by using a proof of something which can’t exist.</p>
+</div>
+<div class="paragraph">
+<p>Once we have an element of the empty type, we can prove anything.
+<code>void</code> is defined in the library, to assist with proofs by contradiction.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>void : Void -&gt; a</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="simple-theorems">Simple Theorems</h3>
+<div class="paragraph">
+<p>When type checking dependent types, the type itself gets <em>normalised</em>.
+So imagine we want to prove the following theorem about the reduction behaviour of <code>plus</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>plusReduces : (n:Nat) -&gt; plus Z n = n</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We’ve written down the statement of the theorem as a type, in just the same way as we would write the type of a program.
+In fact there is no real distinction between proofs and programs.
+A proof, as far as we are concerned here, is merely a program with a precise enough type to guarantee a particular property of interest.</p>
+</div>
+<div class="paragraph">
+<p>We won’t go into details here, but the Curry-Howard correspondence <a href="#howard">[howard]</a> explains this relationship.
+The proof itself is trivial, because <code>plus Z n</code> normalises to <code>n</code> by the definition of <code>plus</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>plusReduces n = Refl</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It is slightly harder if we try the arguments the other way, because plus is defined by recursion on its first argument.
+The proof also works by recursion on the first argument to <code>plus</code>, namely <code>n</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>plusReducesZ : (n:Nat) -&gt; n = plus n Z
+plusReducesZ Z = Refl
+plusReducesZ (S k) = cong (plusReducesZ k)</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>cong</code> is a function defined in the library which states that equality respects function application:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>cong : {f : t -&gt; u} -&gt; a = b -&gt; f a = f b</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We can do the same for the reduction behaviour of plus on successors:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>plusReducesS : (n:Nat) -&gt; (m:Nat) -&gt; S (plus n m) = plus n (S m)
+plusReducesS Z m = Refl
+plusReducesS (S k) m = cong (plusReducesS k m)</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Even for trival theorems like these, the proofs are a little tricky to construct in one go.
+When things get even slightly more complicated, it becomes too much to think about to construct proofs in this &#8216;batch mode&#8217;.
+<span class="logo">Idris</span> therefore provides an interactive proof mode.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="interactive-theorem-proving">Interactive theorem proving</h3>
+<div class="paragraph">
+<p>Instead of writing the proof in one go, we can use <span class="logo">Idris</span>’s interactive proof mode.
+To do this, we write the general <em>structure</em> of the proof, and use the interactive mode to complete the details.
+We’ll be constructing the proof by <em>induction</em>, so we write the cases for <code>Z</code> and <code>S</code>, with a recursive call in the <code>S</code> case giving the inductive hypothesis, and insert <em>metavariables</em> for the rest of the definition:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>plusReducesZ' : (n:Nat) -&gt; n = plus n Z
+plusReducesZ' Z     = ?plusredZ_Z
+plusReducesZ' (S k) = let ih = plusReducesZ' k in
+                      ?plusredZ_S</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>On running <span class="logo">Idris</span>, two global names are created, <code>plusredZ_Z</code> and <code>plusredZ_S</code>, with no definition.
+We can use the <code>:m</code> command at the prompt to find out which metavariables are still to be solved (or, more precisely, which functions exist but have no definitions), then the <code>:t</code> command to see their types:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>*theorems&gt; :m
+Global metavariables:
+        [plusredZ_S,plusredZ_Z]</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>*theorems&gt; :t plusredZ_Z
+plusredZ_Z : Z = plus Z Z
+
+*theorems&gt; :t plusredZ_S
+plusredZ_S : (k : Nat) -&gt; (k = plus k Z) -&gt; S k = plus (S k) Z</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>:p</code> command enters interactive proof mode, which can be used to complete the missing definitions.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>*theorems&gt; :p plusredZ_Z
+
+---- (plusredZ_Z) ----
+{hole0} : Z = plus Z Z</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This gives us a list of premises (above the line; there are none here) and the current goal (below the line; named <code>{hole0}</code> here).
+At the prompt we can enter tactics to direct the construction of the proof.
+In this case, we can normalise the goal with the <code>compute</code> tactic:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>-plusredZ_Z&gt; compute
+
+---- (plusredZ_Z) ----
+{hole0} : Z = Z</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now we have to prove that <code>Z</code> equals <code>Z</code>, which is easy to prove by <code>Refl</code>.
+To apply a function, such as <code>Refl</code>, we use <code>refine</code> which introduces subgoals for each of the function’s explicit arguments (<code>Refl</code> has none):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>-plusredZ_Z&gt; refine Refl
+plusredZ_Z: no more goals</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Here, we could also have used the <code>trivial</code> tactic, which tries to refine by <code>Refl</code>, and if that fails, tries to refine by each name in the local context.
+When a proof is complete, we use the <code>qed</code> tactic to add the proof to the global context, and remove the metavariable from the unsolved metavariables list.
+This also outputs a trace of the proof:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>-plusredZ_Z&gt; qed
+plusredZ_Z = proof
+    compute
+    refine Refl</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>*theorems&gt; :m
+Global metavariables:
+        [plusredZ_S]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>:addproof</code> command, at the interactive prompt, will add the proof to the source file (effectively in an appendix).
+Let us now prove the other required lemma, <code>plusredZ_S</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>*theorems&gt; :p plusredZ_S
+
+---- (plusredZ_S) ----
+{hole0} : (k : Nat) -&gt; (k = plus k Z) -&gt; S k = plus (S k) Z</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this case, the goal is a function type, using <code>k</code> (the argument accessible by pattern matching) and <code>ih</code> — the local variable containing the result of the recursive call.
+We can introduce these as premisses using the <code>intro</code> tactic twice (or <code>intros</code>, which introduces all arguments as premisses).
+This gives:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>  k : Nat
+  ih : k = plus k Z
+---- (plusredZ_S) ----
+{hole2} : S k = plus (S k) Z</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Since plus is defined by recursion on its first argument, the term <code>plus (S k) Z</code> in the goal can be simplified, so we use <code>compute</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>  k : Nat
+  ih : k = plus k Z
+---- (plusredZ_S) ----
+{hole2} : S k = S (plus k Z)</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We know, from the type of <code>ih</code>, that <code>k = plus k Z</code>, so we would like to use this knowledge to replace <code>plus k Z</code> in the goal with <code>k</code>.
+We can achieve this with the <code>rewrite</code> tactic:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>-plusredZ_S&gt; rewrite ih
+
+  k : Nat
+  ih : k = plus k Z
+---- (plusredZ_S) ----
+{hole3} : S k = S k
+
+-plusredZ_S&gt;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>rewrite</code> tactic takes an equality proof as an argument, and tries to rewrite the goal using that proof.
+Here, it results in an equality which is trivially provable:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>-plusredZ_S&gt; trivial
+plusredZ_S: no more goals
+-plusredZ_S&gt; qed
+plusredZ_S = proof {
+    intros;
+    rewrite ih;
+    trivial;
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Again, we can add this proof to the end of our source file using the <code>:addproof</code> command at the interactive prompt.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="sect:totality">Totality Checking</h3>
+<div class="paragraph">
+<p>If we really want to trust our proofs, it is important that they are defined by <em>total</em> functions — that is, a function which is defined for all possible inputs and is guaranteed to terminate.
+Otherwise we could construct an element of the empty type, from which we could prove anything:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>-- making use of 'hd' being partially defined
+empty1 : Void
+empty1 = hd [] where
+    hd : List a -&gt; a
+    hd (x :: xs) = x
+
+-- not terminating
+empty2 : Void
+empty2 = empty2</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Internally, <span class="logo">Idris</span> checks every definition for totality, and we can check at the prompt with the <code>:total</code> command.
+We see that neither of the above definitions is total:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>*theorems&gt; :total empty1
+possibly not total due to: empty1#hd
+    not total as there are missing cases
+*theorems&gt; :total empty2
+possibly not total due to recursive path empty2</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note the use of the word &#8220;possibly&#8221; — a totality check can, of course, never be certain due to the undecidability of the halting problem.
+The check is, therefore, conservative.
+It is also possible (and indeed advisable, in the case of proofs) to mark functions as total so that it will be a compile time error for the totality check to fail:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>total empty2 : Void
+empty2 = empty2
+
+Type checking ./theorems.idr
+theorems.idr:25:empty2 is possibly not total due to recursive path empty2</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Reassuringly, our proof in Section <a href="#sect:empty">The Empty Type</a> that the zero and successor constructors are disjoint is total:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>*theorems&gt; :total disjoint
+Total</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The totality check is, necessarily, conservative.
+To be recorded as total, a function <code>f</code> must:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Cover all possible inputs</p>
+</li>
+<li>
+<p>Be <em>well-founded</em> — i.e.
+by the time a sequence of (possibly mutually) recursive calls reaches <code>f</code> again, it must be possible to show that one of its arguments has decreased.</p>
+</li>
+<li>
+<p>Not use any data types which are not <em>strictly positive</em></p>
+</li>
+<li>
+<p>Not call any non-total functions</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="directives-and-compiler-flags-for-totality">Directives and Compiler Flags for Totality</h4>
+<div class="paragraph">
+<p>By default, <span class="logo">Idris</span> allows all definitions, whether total or not.
+However, it is desirable for functions to be total as far as possible, as this provides a guarantee that they provide a result for all possible inputs, in finite time.
+It is possible to make total functions a requirement, either:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>By using the <code>--total</code> compiler flag.</p>
+</li>
+<li>
+<p>By adding a <code>%default total</code> directive to a source file.
+All definitions after this will be required to be total, unless explicitly flagged as <code>partial</code>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>All functions <em>after</em> a <code>%default total</code> declaration are required to be total.
+Correspondingly, after a <code>%default partial</code> declaration, the requirement is relaxed.</p>
+</div>
+<div class="paragraph">
+<p>Finally, the compiler flag <code>--warnpartial</code> causes <span class="logo">Idris</span> to print a warning for any undeclared partial function.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="totality-checking-issues">Totality checking issues</h4>
+<div class="paragraph">
+<p>Please note that the totality checker is not perfect! Firstly, it is necessarily conservative due to the undecidability of the halting problem, so many programs which <em>are</em> total will not be detected as such.
+Secondly, the current implementation has had limited effort put into it so far, so there may still be cases where it believes a function is total which is not.
+Do not rely on it for your proofs yet!</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="hints-for-totality">Hints for totality</h4>
+<div class="paragraph">
+<p>In cases where you believe a program is total, but <span class="logo">Idris</span> does not agree, it is possible to give hints to the checker to give more detail for a termination argument.
+The checker works by ensuring that all chains of recursive calls eventually lead to one of the arguments decreasing towards a base case, but sometimes this is hard to spot.
+For example, the following definition cannot be checked as <code>total</code> because the checker cannot decide that <code>filter (&lt;= x) xs</code> will always be smaller than <code>(x :: xs)</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>qsort : Ord a =&gt; List a -&gt; List a
+qsort [] = []
+qsort (x :: xs)
+   = qsort (filter (&lt; x) xs) ++
+      (x :: qsort (filter (&gt;= x) xs))</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The function <code>assert_smaller</code>, defined in the Prelude, is intended to address this problem:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>assert_smaller : a -&gt; a -&gt; a
+assert_smaller x y = y</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It simply evaluates to its second argument, but also asserts to the totality checker that <code>y</code> is structurally smaller than <code>x</code>.
+This can be used to explain the reasoning for totality if the checker cannot work it out itself.
+The above example can now be written as:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>total
+qsort : Ord a =&gt; List a -&gt; List a
+qsort [] = []
+qsort (x :: xs)
+   = qsort (assert_smaller (x :: xs) (filter (&lt; x) xs)) ++
+      (x :: qsort (assert_smaller (x :: xs) (filter (&gt;= x) xs)))</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The expression <code>assert_smaller (x</code> :: <code>xs) (filter (&lt;= x) xs)</code> asserts that the result of the filter will always be smaller than the pattern <code>(x</code> :: <code>xs)</code>.</p>
+</div>
+<div class="paragraph">
+<p>In more extreme cases, the function <code>assert_total</code> marks a subexpression as always being total:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>assert_total : a -&gt; a
+assert_total x = x</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In general, this function should be avoided, but it can be very useful when reasoning about primitives or externally defined functions (for example from a C library) where totality can be shown by an external argument.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="sect:provisional">Provisional Definitions</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Sometimes when programming with dependent types, the type required by the type checker and the type of the program we have written will be different (in that they do not have the same normal form), but nevertheless provably equal.
+For example, recall the <code>parity</code> function:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">data Parity : Nat -&gt; Type where
+   Even : Parity (n + n)
+   Odd  : Parity (S (n + n))
+
+parity : (n:Nat) -&gt; Parity n</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We’d like to implement this as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">parity : (n:Nat) -&gt; Parity n
+parity Z     = Even {n=Z}
+parity (S Z) = Odd {n=Z}
+parity (S (S k)) with (parity k)
+  parity (S (S (j + j)))     | Even = Even {n=S j}
+  parity (S (S (S (j + j)))) | Odd  = Odd {n=S j}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This simply states that zero is even, one is odd, and recursively, the parity of <code>k+2</code> is the same as the parity of <code>k</code>.
+Explicitly marking the value of <code>n</code> is even and odd is necessary to help type inference.
+Unfortunately, the type checker rejects this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>viewsbroken.idr:12:10:When elaborating right hand side of ViewsBroken.parity:
+Can't unify
+    Parity (plus (S j) (S j))
+with
+    Parity (S (S (plus j j)))
+
+Specifically:
+    Can't unify
+        plus (S j) (S j)
+    with
+        S (S (plus j j))</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The type checker is telling us that <code>(j+1)+(j+1)</code> and <code>2+j+j</code> do not normalise to the same value.
+This is because <code>plus</code> is defined by recursion on its first argument, and in the second value, there is a successor symbol on the second argument, so this will not help with reduction.
+These values are obviously equal — how can we rewrite the program to fix this problem?</p>
+</div>
+<div class="sect2">
+<h3 id="provisional-definitions">Provisional definitions</h3>
+<div class="paragraph">
+<p><em>Provisional definitions</em> help with this problem by allowing us to defer the proof details until a later point.
+There are two main reasons why they are useful.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>When <em>prototyping</em>, it is useful to be able to test programs before finishing all the details of proofs.</p>
+</li>
+<li>
+<p>When <em>reading</em> a program, it is often much clearer to defer the proof details so that they do not distract the reader from the underlying algorithm.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Provisional definitions are written in the same way as ordinary definitions, except that they introduce the right hand side with a <code>?=</code> rather than <code>=</code>.
+We define <code>parity</code> as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-idris" data-lang="idris">parity : (n:Nat) -&gt; Parity n
+parity Z     = Even {n=Z}
+parity (S Z) = Odd {n=Z}
+parity (S (S k)) with (parity k)
+  parity (S (S (j + j)))     | Even ?= Even {n=S j}
+  parity (S (S (S (j + j)))) | Odd  ?= Odd {n=S j}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When written in this form, instead of reporting a type error, <span class="logo">Idris</span> will insert a metavariable standing for a theorem which will correct the type error.
+<span class="logo">Idris</span> tells us we have two proof obligations, with names generated from the module and function names:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>*views&gt; :m
+Global metavariables:
+        [views.parity_lemma_2,views.parity_lemma_1]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The first of these has the following type:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>*views&gt; :p views.parity_lemma_1
+
+---- (views.parity_lemma_1) ----
+{hole0} : (j : Nat) -&gt; (Parity (plus (S j) (S j))) -&gt; Parity (S (S (plus j j)))
+
+-views.parity_lemma_1&gt;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The two arguments are <code>j</code>, the variable in scope from the pattern match, and <code>value</code>, which is the value we gave in the right hand side of the provisional definition.
+Our goal is to rewrite the type so that we can use this value.
+We can achieve this using the following theorem from the prelude:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>plusSuccRightSucc : (left : Nat) -&gt; (right : Nat) -&gt;
+  S (left + right) = left + (S right)</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We need to use <code>compute</code> again to unfold the definition of <code>plus</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>-views.parity_lemma_1&gt; compute
+
+
+---- (views.parity_lemma_1) ----
+{hole0} : (j : Nat) -&gt; (Parity (S (plus j (S j)))) -&gt; Parity (S (S (plus j j)))</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>After applying <code>intros</code> we have:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>-views.parity_lemma_1&gt; intros
+
+  j : Nat
+  value : Parity (S (plus j (S j)))
+---- (views.parity_lemma_1) ----
+{hole2} : Parity (S (S (plus j j)))</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then we apply the <code>plusSuccRightSucc</code> rewrite rule, symmetrically, to <code>j</code> and <code>j</code>, giving:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>-views.parity_lemma_1&gt; rewrite sym (plusSuccRightSucc j j)
+
+  j : Nat
+  value : Parity (S (plus j (S j)))
+---- (views.parity_lemma_1) ----
+{hole3} : Parity (S (plus j (S j)))</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>sym</code> is a function, defined in the library, which reverses the order of the rewrite:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>sym : l = r -&gt; r = l
+sym Refl = Refl</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We can complete this proof using the <code>trivial</code> tactic, which finds <code>value</code> in the premises.
+The proof of the second lemma proceeds in exactly the same way.</p>
+</div>
+<div class="paragraph">
+<p>We can now test the <code>natToBin</code> function from Section <a href="#sect:nattobin">[sect:nattobin]</a> at the prompt.
+The number 42 is 101010 in binary.
+The binary digits are reversed:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>*views&gt; show (natToBin 42)
+"[False, True, False, True, False, True]" : String</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="suspension-of-disbelief">Suspension of Disbelief</h3>
+<div class="paragraph">
+<p><span class="logo">Idris</span> requires that proofs be complete before compiling programs (although evaluation at the prompt is possible without proof details).
+Sometimes, especially when prototyping, it is easier not to have to do this.
+It might even be beneficial to test programs before attempting to prove things about them — if testing finds an error, you know you had better not waste your time proving something!</p>
+</div>
+<div class="paragraph">
+<p>Therefore, <span class="logo">Idris</span> provides a built-in coercion function, which allows you to use a value of the incorrect types:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>believe_me : a -&gt; b</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Obviously, this should be used with extreme caution.
+It is useful when prototyping, and can also be appropriate when asserting properties of external code (perhaps in an external C library).
+The &#8220;proof&#8221; of <code>views.parity_lemma_1</code> using this is:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>views.parity_lemma_2 = proof {
+    intro;
+    intro;
+    exact believe_me value;
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>exact</code> tactic allows us to provide an exact value for the proof.
+In this case, we assert that the value we gave was correct.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="example-binary-numbers">Example: Binary numbers</h3>
+<div class="paragraph">
+<p>Previously, we implemented conversion to binary numbers using the <code>Parity</code> view.
+Here, we show how to use the same view to implement a verified conversion to binary.
+We begin by indexing binary numbers over their <code>Nat</code> equivalent.
+This is a common pattern, linking a representation (in this case <code>Binary</code>) with a meaning (in this case <code>Nat</code>):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>data Binary : Nat -&gt; Type where
+   bEnd : Binary Z
+   bO : Binary n -&gt; Binary (n + n)
+   bI : Binary n -&gt; Binary (S (n + n))</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>bO</code> and <code>bI</code> take a binary number as an argument and effectively shift it one bit left, adding either a zero or one as the new least significant bit.
+The index, <code>n + n</code> or <code>S (n + n)</code> states the result that this left shift then add will have to the meaning of the number.
+This will result in a representation with the least significant bit at the front.</p>
+</div>
+<div class="paragraph">
+<p>Now a function which converts a Nat to binary will state, in the type, that the resulting binary number is a faithful representation of the original Nat:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>natToBin : (n:Nat) -&gt; Binary n</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>Parity</code> view makes the definition fairly simple — halving the number is effectively a right shift after all — although we need to use a provisional definition in the odd case:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>natToBin : (n:Nat) -&gt; Binary n
+natToBin Z = bEnd
+natToBin (S k) with (parity k)
+   natToBin (S (j + j))     | even  = bI (natToBin j)
+   natToBin (S (S (j + j))) | odd  ?= bO (natToBin (S j))</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The problem with the odd case is the same as in the definition of <code>parity</code>, and the proof proceeds in the same way:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>natToBin_lemma_1 = proof {
+    intro;
+    intro;
+    rewrite sym (plusSuccRightSucc j j);
+    trivial;
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To finish, we’ll implement a main program which reads an integer from the user and outputs it in binary.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>main : IO ()
+main = do putStr "Enter a number: "
+          x &lt;- getLine
+          print (natToBin (fromInteger (cast x)))</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For this to work, of course, we need a <code>Show</code> instance for <code>Binary n</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>instance Show (Binary n) where
+    show (bO x) = show x ++ "0"
+    show (bI x) = show x ++ "1"
+    show bEnd = ""</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="interactive-editing">Interactive Editing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>By now, we have seen several examples of how <span class="logo">Idris</span>’ dependent type system can give extra confidence in a function’s correctness by giving a more precise description of its intended behaviour in its <em>type</em>.
+We have also seen an example of how the type system can help with EDSL development by allowing a programmer to describe the type system of an object language.
+However, precise types give us more than verification of programs — we can also exploit types to help write programs which are <em>correct by construction</em>.</p>
+</div>
+<div class="paragraph">
+<p>The <span class="logo">Idris</span> REPL provides several commands for inspecting and modifying parts of programs, based on their types, such as case splitting on a pattern variable, inspecting the type of a metavariable, and even a basic proof search mechanism.
+In this section, we explain how these features can be exploited by a text editor, and specifically how to do so in Vim<span class="footnote">[<a id="_footnoteref_4" class="footnote" href="#_footnote_4" title="View footnote.">4</a>]</span>.
+An interactive mode for Emacs<span class="footnote">[<a id="_footnoteref_5" class="footnote" href="#_footnote_5" title="View footnote.">5</a>]</span> is also available.</p>
+</div>
+<div class="sect2">
+<h3 id="editing-at-the-repl">Editing at the REPL</h3>
+<div class="paragraph">
+<p>The REPL provides a number of commands, which we will describe shortly, which generate new program fragments based on the currently loaded module.
+These take the general form</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>:command [line number] [name]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>That is, each command acts on a specific source line, at a specific name, and outputs a new program fragment.
+Each command has an alternative form, which <em>updates</em> the source file in-place:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>:command! [line number] [name]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When the REPL is loaded, it also starts a background process which accepts and responds to REPL commands, using <code>idris --client</code>.
+For example, if we have a REPL running elsewhere, we can execute commands such as:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ idris --client ':t plus'
+Prelude.Nat.plus : Nat -&gt; Nat -&gt; Nat
+$ idris --client '2+2'
+4 : Integer</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A text editor can take advantage of this, along with the editing commands, in order to provide interactive editing support.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="editing-commands">Editing Commands</h3>
+<div class="sect3">
+<h4 id="addclause">:addclause</h4>
+<div class="paragraph">
+<p>The <code>:addclause n f</code> command (abbreviated <code>:ac n f</code>) creates a template definition for the function named <code>f</code> declared on line <code>n</code>.
+For example, if the code beginning on line 94 contains:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>vzipWith : (a -&gt; b -&gt; c) -&gt;
+           Vect n a -&gt; Vect n b -&gt; Vect n c</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>then <code>:ac 94 vzipWith</code> will give:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>vzipWith f xs ys = ?vzipWith_rhs</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The names are chosen according to hints which may be given by a programmer, and then made unique by the machine by adding a digit if necessary.
+Hints can be given as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>%name Vect xs, ys, zs, ws</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This declares that any names generated for types in the <code>Vect</code> family should be chosen in the order <code>xs</code>, <code>ys</code>, <code>zs</code>, <code>ws</code>.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="casesplit">:casesplit</h4>
+<div class="paragraph">
+<p>The <code>:casesplit n x</code> command, abbreviated <code>:cs n x</code>, splits the pattern variable <code>x</code> on line <code>n</code> into the various pattern forms it may take, removing any cases which are impossible due to unification errors.
+For example, if the code beginning on line 94 is:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>vzipWith : (a -&gt; b -&gt; c) -&gt;
+           Vect n a -&gt; Vect n b -&gt; Vect n c
+vzipWith f xs ys = ?vzipWith_rhs</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>then <code>:cs 96 xs</code> will give:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>vzipWith f [] ys = ?vzipWith_rhs_1
+vzipWith f (x :: xs) ys = ?vzipWith_rhs_2</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>That is, the pattern variable <code>xs</code> has been split into the two possible cases <code>[]</code> and <code>x</code> :: <code>xs</code>.
+Again, the names are chosen according to the same heuristic.
+If we update the file (using <code>:cs!</code>) then case split on <code>ys</code> on the same line, we get:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>vzipWith f [] [] = ?vzipWith_rhs_3</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>That is, the pattern variable <code>ys</code> has been split into one case <code>[]</code>, <span class="logo">Idris</span> having noticed that the other possible case <code>y</code> :: <code>ys</code> would lead to a unification error.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="addmissing">:addmissing</h4>
+<div class="paragraph">
+<p>The <code>:addmissing n f</code> command, abbreviated <code>:am n f</code>, adds the clauses which are required to make the function <code>f</code> on line <code>n</code> cover all inputs.
+For example, if the code beginning on line 94 is…</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>vzipWith : (a -&gt; b -&gt; c) -&gt;
+           Vect n a -&gt; Vect n b -&gt; Vect n c
+vzipWith f [] [] = ?vzipWith_rhs_1</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>then <code>:am 96 vzipWith</code> gives:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>vzipWith f (x :: xs) (y :: ys) = ?vzipWith_rhs_2</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>That is, it notices that there are no cases for non-empty vectors, generates the required clauses, and eliminates the clauses which would lead to unification errors.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="proofsearch">:proofsearch</h4>
+<div class="paragraph">
+<p>The <code>:proofsearch n f</code> command, abbreviated <code>:ps n f</code>, attempts to find a value for the metavariable <code>f</code> on line <code>n</code> by proof search, trying values of local variables, recursive calls and constructors of the required family.
+Optionally, it can take a list of <em>hints</em>, which are functions it can try applying to solve the metavariable.
+For example, if the code beginning on line 94 is:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>vzipWith : (a -&gt; b -&gt; c) -&gt;
+           Vect n a -&gt; Vect n b -&gt; Vect n c
+vzipWith f [] [] = ?vzipWith_rhs_1
+vzipWith f (x :: xs) (y :: ys) = ?vzipWith_rhs_2</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>then <code>:ps 96 vzipWith_rhs_1</code> will give</p>
+</div>
+<div class="openblock">
+<div class="content">
+
+</div>
+</div>
+<div class="paragraph">
+<p>This works because it is searching for a <code>Vect</code> of length 0, of which the empty vector is the only possibiliy.
+Similarly, and perhaps surprisingly, there is only one possibility if we try to solve <code>:ps 97 vzipWith_rhs_2</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>f x y :: (vzipWith f xs ys)</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This works because <code>vzipWith</code> has a precise enough type: The resulting vector has to be non-empty (a <code>::</code>); the first element must have type <code>c</code> and the only way to get this is to apply <code>f</code> to <code>x</code> and <code>y</code>; finally, the tail of the vector can only be built recursively.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="makewith">:makewith</h4>
+<div class="paragraph">
+<p>The <code>:makewith n f</code> command, abbreviated <code>:mw n f</code>, adds a <code>with</code> to a pattern clause.
+For example, recall <code>parity</code>.
+If line 10 is:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>parity (S k) = ?parity_rhs</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>then <code>:mw 10 parity</code> will give:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>parity (S k) with (_)
+  parity (S k) | with_pat = ?parity_rhs</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If we then fill in the placeholder <code>_</code> with <code>parity k</code> and case split on <code>with_pat</code> using <code>:cs 11 with_pat</code> we get the following patterns:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>  parity (S (plus n n)) | even = ?parity_rhs_1
+  parity (S (S (plus n n))) | odd = ?parity_rhs_2</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that case splitting has normalised the patterns here (giving <code>plus</code> rather than <code>+</code>).
+In any case, we see that using interactive editing significantly simplifies the implementation of dependent pattern matching by showing a programmer exactly what the valid patterns are.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="interactive-editing-in-vim">Interactive Editing in Vim</h3>
+<div class="paragraph">
+<p>The editor mode for Vim provides syntax highlighting, indentation and interactive editing support using the commands described above.
+Interactive editing is achieved using the following editor commands, each of which update the buffer directly:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>\d</code> adds a template definition for the name declared on the current line (using <code>:addclause</code>).</p>
+</li>
+<li>
+<p><code>\c</code> case splits the variable at the cursor (using <code>:casesplit</code>).</p>
+</li>
+<li>
+<p><code>\m</code> adds the missing cases for the name at the cursor (using <code>:addmissing</code>).</p>
+</li>
+<li>
+<p><code>\w</code> adds a <code>with</code> clause (using <code>:makewith</code>).</p>
+</li>
+<li>
+<p><code>\o</code> invokes a proof search to solve the metavariable under the cursor (using <code>:proofsearch</code>).</p>
+</li>
+<li>
+<p><code>\p</code> invokes a proof search with additional hints to solve the metavariable under the cursor (using <code>:proofsearch</code>).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>There are also commands to invoke the type checker and evaluator:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>\t</code> displays the type of the (globally visible) name under the cursor.
+In the case of a metavariable, this displays the context and the expected type.</p>
+</li>
+<li>
+<p><code>\e</code> prompts for an expression to evaluate.</p>
+</li>
+<li>
+<p><code>\r</code> reloads and type checks the buffer.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Corresponding commands are also available in the Emacs mode.
+Support for other editors can be added in a relatively straighforward manner by using <code>idris–client</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="syntax-extensions">Syntax Extensions</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><span class="logo">Idris</span> supports the implementation of <em>Embedded Domain Specific Languages</em> (EDSLs) in several ways <a href="#res-dsl-padl12">[res-dsl-padl12]</a>.
+One way, as we have already seen, is through extending <code>do</code> notation.
+Another important way is to allow extension of the core syntax.
+In this section we describe two ways of extending the syntax: <code>syntax</code> rules and <code>dsl</code> notation.</p>
+</div>
+<div class="sect2">
+<h3 id="syntax-rules"><code>syntax</code> rules</h3>
+<div class="paragraph">
+<p>We have seen <code>if...then...else</code> expressions, but these are not built in.
+Instead, we can define a function in the prelude as follows (we have already seen this function in Section <a href="#sect:lazy">Laziness</a>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>boolCase : (x:Bool) -&gt; Lazy a -&gt; Lazy a -&gt; a;
+boolCase True  t e = t;
+boolCase False t e = e;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>and then extend the core syntax with a <code>syntax</code> declaration:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>syntax "if" [test] "then" [t] "else" [e] = boolCase test t e;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The left hand side of a <code>syntax</code> declaration describes the syntax rule, and the right hand side describes its expansion.
+The syntax rule itself consists of:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Keywords</strong> — here, <code>if</code>, <code>then</code> and <code>else</code>, which must be valid identifiers</p>
+</li>
+<li>
+<p><strong>Non-terminals</strong> — included in square brackets, <code>[test]</code>, <code>[t]</code> and <code>[e]</code> here, which stand for arbitrary expressions.
+To avoid parsing ambiguities, these expressions cannot use syntax extensions at the top level (though they can be used in parentheses).</p>
+</li>
+<li>
+<p><strong>Names</strong> — included in braces, which stand for names which may be bound on the right hand side.</p>
+</li>
+<li>
+<p><strong>Symbols</strong> — included in quotations marks, e.g.
+<code>:=</code>.
+This can also be used to include reserved words in syntax rules, such as <code>let</code> or <code>in</code>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The limitations on the form of a syntax rule are that it must include at least one symbol or keyword, and there must be no repeated variables standing for non-terminals.
+Any expression can be used, but if there are two non-terminals in a row in a rule, only simple expressions may be used (that is, variables, constants, or bracketed expressions).
+Rules can use previously defined rules, but may not be recursive.
+The following syntax extensions would therefore be valid:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>syntax [var] ":=" [val]                    = Assign var val;
+syntax [test] "?" [t] ":" [e]              = if test then t else e;
+syntax "select" [x] "from" [t] "where" [w] = SelectWhere x t w;
+syntax "select" [x] "from" [t]             = Select x t;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Syntax macros can be further restricted to apply only in patterns (i.e., only on the left hand side of a pattern match clause) or only in terms (i.e. everywhere but the left hand side of a pattern match clause) by being marked as <code>pattern</code> or <code>term</code> syntax rules.
+For example, we might define an interval as follows, with a static check that the lower bound is below the upper bound using <code>so</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>data Interval : Type where
+   MkInterval : (lower : Float) -&gt; (upper : Float) -&gt;
+                so (lower &lt; upper) -&gt; Interval</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We can define a syntax which, in patterns, always matches <code>oh</code> for the proof argument, and in terms requires a proof term to be provided:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>pattern syntax "[" [x] "..." [y] "]" = MkInterval x y oh
+term    syntax "[" [x] "..." [y] "]" = MkInterval x y ?bounds_lemma</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In terms, the syntax <code>[x...y]</code> will generate a proof obligation <code>bounds_lemma</code> (possibly renamed).</p>
+</div>
+<div class="paragraph">
+<p>Finally, syntax rules may be used to introduce alternative binding forms.
+For example, a <code>for</code> loop binds a variable on each iteration:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>syntax "for" {x} "in" [xs] ":" [body] = forLoop xs (\x =&gt; body)
+
+main : IO ()
+main = do for x in [1..10]:
+              putStrLn ("Number " ++ show x)
+          putStrLn "Done!"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that we have used the <code>{x}</code> form to state that <code>x</code> represents a bound variable, substituted on the right hand side.
+We have also put <code>“in”</code> in quotation marks since it is already a reserved word.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="dsl-notation"><code>dsl</code> notation</h3>
+<div class="paragraph">
+<p>The well-typed interpreter in Section <a href="#sect:interp">Example: The Well-Typed Interpreter</a> is a simple example of a common programming pattern with dependent types.
+Namely: describe an <em>object language</em> and its type system with dependent types to guarantee that only well-typed programs can be represented, then program using that representation.
+Using this approach we can, for example, write programs for serialising binary data <a href="#plpv11">[plpv11]</a> or running concurrent processes safely <a href="#cbconc-fi">[cbconc-fi]</a>.</p>
+</div>
+<div class="paragraph">
+<p>Unfortunately, the form of object language programs makes it rather hard to program this way in practice.
+Recall the factorial program in <code>Expr</code> for example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>fact : Expr G (TyFun TyInt TyInt)
+fact = Lam (If (Op (==) (Var Stop) (Val 0))
+               (Val 1) (Op (*) (app fact (Op (-) (Var Stop) (Val 1)))
+                               (Var Stop)))</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Since this is a particularly useful pattern, Idris provides syntax overloading  to make it easier to program in such object languages:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>dsl expr
+    lambda      = Lam
+    variable    = Var
+    index_first = Stop
+    index_next  = Pop</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A <code>dsl</code> block describes how each syntactic construct is represented in an object language.
+Here, in the <code>expr</code> language, any Idris lambda is translated to a <code>Lam</code> constructor; any variable is translated to the <code>Var</code> constructor, using <code>Pop</code> and <code>Stop</code> to construct the de Bruijn index (i.e., to count how many bindings since the variable itself was bound).
+It is also possible to overload <code>let</code> in this way.
+We can now write <code>fact</code> as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>fact : Expr G (TyFun TyInt TyInt)
+fact = expr (\x =&gt; If (Op (==) x (Val 0))
+                      (Val 1) (Op (*) (app fact (Op (-) x (Val 1))) x))</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this new version, <code>expr</code> declares that the next expression will be overloaded.
+We can take this further, using idiom brackets, by declaring:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(&lt;$&gt;) : |(f : Expr G (TyFun a t)) -&gt; Expr G a -&gt; Expr G t
+(&lt;$&gt;) = \f, a =&gt; App f a
+
+pure : Expr G a -&gt; Expr G a
+pure = id</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that there is no need for these to be part of an instance of <code>Applicative</code>, since idiom bracket notation translates directly to the names <code>&lt;$&gt;</code> and <code>pure</code>, and ad-hoc type-directed overloading is allowed.
+We can now say:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>fact : Expr G (TyFun TyInt TyInt)
+fact = expr (\x =&gt; If (Op (==) x (Val 0))
+                      (Val 1) (Op (*) [| fact (Op (-) x (Val 1)) |] x))</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With some more ad-hoc overloading and type class instances, and a new syntax rule, we can even go as far as:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>syntax "IF" [x] "THEN" [t] "ELSE" [e] = If x t e
+
+fact : Expr G (TyFun TyInt TyInt)
+fact = expr (\x =&gt; IF x == 0 THEN 1 ELSE [| fact (x - 1) |] * x)</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="miscellany">Miscellany</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In this section we discuss a variety of additional features:</p>
+</div>
+<table class="tableblock frame-none grid-none spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div><div class="ulist">
+<ul>
+<li>
+<p>auto, implicit, and default arguments;</p>
+</li>
+<li>
+<p>literate programming;</p>
+</li>
+<li>
+<p>interfacing with external libraries through the foreign function interface;</p>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div><div class="ulist">
+<ul>
+<li>
+<p>type providers;</p>
+</li>
+<li>
+<p>code generation; and</p>
+</li>
+<li>
+<p>the universe hierarchy.</p>
+</li>
+</ul>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="sect2">
+<h3 id="auto-implicit-arguments">Auto implicit arguments</h3>
+<div class="paragraph">
+<p>We have already seen implicit arguments, which allows arguments to be omitted when they can be inferred by the type checker, e.g.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>index : {a:Type} -&gt; {n:Nat} -&gt; Fin n -&gt; Vect n a -&gt; a</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In other situations, it may be possible to infer arguments not by type checking but by searching the context for an appropriate value, or constructing a proof.
+For example, the following definition of <code>head</code> which requires a proof that the list is non-empty:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>isCons : List a -&gt; Bool
+isCons [] = False
+isCons (x :: xs) = True
+
+head : (xs : List a) -&gt; (isCons xs = True) -&gt; a
+head (x :: xs) _ = x</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If the list is statically known to be non-empty, either because its value is known or because a proof already exists in the context, the proof can be constructed automatically.
+Auto implicit arguments allow this to happen silently.
+We define <code>head</code> as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>head : (xs : List a) -&gt; {auto p : isCons xs = True} -&gt; a
+head (x :: xs) = x</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>auto</code> annotation on the implicit argument means that <span class="logo">Idris</span> will attempt to fill in the implicit argument using the <code>trivial</code> tactic, which searches through the context for a proof, and tries to solve with <code>refl</code> if a proof is not found.
+Now when <code>head</code> is applied, the proof can be omitted.
+In the case that a proof is not found, it can be provided explicitly as normal:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>head xs {p = ?headProof}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>More generally, we can fill in implicit arguments with a default value by annotating them with <code>default</code>.
+The definition above is equivalent to:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>head : (xs : List a) -&gt;
+       {default proof { trivial; } p : isCons xs = True} -&gt; a
+head (x :: xs) = x</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="implicit-conversions">Implicit conversions</h3>
+<div class="paragraph">
+<p><span class="logo">Idris</span> supports the creation of <em>implicit conversions</em>, which allow automatic conversion of values from one type to another when required to make a term type correct.
+This is intended to increase convenience and reduce verbosity.
+A contrived but simple example is the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>implicit intString : Int -&gt; String
+intString = show
+
+test : Int -&gt; String
+test x = "Number " ++ x</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In general, we cannot append an <code>Int</code> to a <code>String</code>, but the implicit conversion function <code>intString</code> can convert <code>x</code> to a <code>String</code>, so the definition of <code>test</code> is type correct.
+An implicit conversion is implemented just like any other function, but given the <code>implicit</code> modifier, and restricted to one explicit argument.</p>
+</div>
+<div class="paragraph">
+<p>Only one implicit conversion will be applied at a time.
+That is, implicit conversions cannot be chained.
+Implicit conversions of simple types, as above, are however discouraged! More commonly, an implicit conversion would be used to reduce verbosity in an embedded domain specific language, or to hide details of a proof.
+Such examples are beyond the scope of this tutorial.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="literate-programming">Literate programming</h3>
+<div class="paragraph">
+<p>Like Haskell, <span class="logo">Idris</span> supports <em>literate</em> programming.
+If a file has an extension of <code>.lidr</code> then it is assumed to be a literate file.
+In literate programs, everything is assumed to be a comment unless the line begins with a greater than sign <code>&gt;</code>, for example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>&gt; module literate
+
+This is a comment.
+The main program is below
+
+&gt; main : IO ()
+&gt; main = putStrLn "Hello literate world!\n"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>An additional restriction is that there must be a blank line between a program line (beginning with <code>&gt;</code>) and a comment line (beginning with any other character).</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="foreign-function-calls">Foreign function calls</h3>
+<div class="paragraph">
+<p>For practical programming, it is often necessary to be able to use external libraries, particularly for interfacing with the operating system, file system, networking, <em>et cetera</em>.
+<span class="logo">Idris</span> provides a lightweight foreign function interface for achieving this, as part of the prelude.
+For this, we assume a certain amount of knowledge of C and the <code>gcc</code> compiler.
+First, we define a datatype which describes the external types we can handle:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>data FTy = FInt | FFloat | FChar | FString | FPtr | FUnit</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Each of these corresponds directly to a C type.
+Respectively: <code>int</code>, <code>double</code>, <code>char</code>, <code>char*</code>, <code>void*</code> and <code>void</code>.
+There is also a translation to a concrete <span class="logo">Idris</span> type, described by the following function:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>interpFTy : FTy -&gt; Type
+interpFTy FInt    = Int
+interpFTy FFloat  = Float
+interpFTy FChar   = Char
+interpFTy FString = String
+interpFTy FPtr    = Ptr
+interpFTy FUnit   = ()</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A foreign function is described by a list of input types and a return type, which can then be converted to an <span class="logo">Idris</span> type:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>ForeignTy : (xs:List FTy) -&gt; (t:FTy) -&gt; Type</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A foreign function is assumed to be impure, so <code>ForeignTy</code> builds an <code>IO</code> type, for example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Idris&gt; ForeignTy [FInt, FString] FString
+Int -&gt; String -&gt; IO String : Type
+
+Idris&gt; ForeignTy [FInt, FString] FUnit
+Int -&gt; String -&gt; IO () : Type</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We build a call to a foreign function by giving the name of the function, a list of argument types and the return type.
+The built in construct <code>mkForeign</code> converts this description to a function callable by Idris:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>data Foreign : Type -&gt; Type where
+    FFun : String -&gt; (xs:List FTy) -&gt; (t:FTy) -&gt;
+           Foreign (ForeignTy xs t)
+
+mkForeign : Foreign x -&gt; x</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that the compiler expects <code>mkForeign</code> to be fully applied to build a complete foreign function call.
+For example, the <code>putStr</code> function is implemented as follows, as a call to an external function <code>putStr</code> defined in the run-time system:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>putStr : String -&gt; IO ()
+putStr x = mkForeign (FFun "putStr" [FString] FUnit) x</pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="include-and-linker-directives">Include and linker directives</h4>
+<div class="paragraph">
+<p>Foreign function calls are translated directly to calls to C functions, with appropriate conversion between the <span class="logo">Idris</span> representation of a value and the C representation.
+Often this will require extra libraries to be linked in, or extra header and object files.
+This is made possible through the following directives:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>%lib target x</code> — include the <code>libx</code> library.
+If the target is <code>C</code> this is equivalent to passing the <code>-lx</code> option to <code>gcc</code>.
+If the target is Java the library will be interpreted as a <code>groupId:artifactId:packaging:version</code> dependency coordinate for maven.</p>
+</li>
+<li>
+<p><code>%include target x</code> — use the header file or import <code>x</code> for the given back end target.</p>
+</li>
+<li>
+<p><code>%link target x.o</code> — link with the object file <code>x.o</code> when using the given back end target.</p>
+</li>
+<li>
+<p><code>%dynamic x.so</code> — dynamically link the interpreter with the shared object <code>x.so</code>.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="testing-foreign-function-calls">Testing foreign function calls</h4>
+<div class="paragraph">
+<p>Normally, the <span class="logo">Idris</span> interpreter (used for typechecking and at the REPL) will not perform IO actions.
+Additionally, as it neither generates C code nor compiles to machine code, the <code>%lib</code>, <code>%include</code> and <code>%link</code> directives have no effect.
+IO actions and FFI calls can be tested using the special REPL command <code>:x EXPR</code>, and C libraries can be dynamically loaded in the interpreter by using the <code>:dynamic</code> command or the <code>%dynamic</code> directive.
+For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Idris&gt; :dynamic libm.so
+Idris&gt; :x unsafePerformIO ((mkForeign (FFun "sin" [FFloat] FFloat)) 1.6)
+0.9995736030415051 : Float</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="type-providers">Type Providers</h3>
+<div class="paragraph">
+<p><span class="logo">Idris</span> type providers, inspired by F#’s type providers, are a means of making our types be &#8220;about&#8221; something in the world outside of Idris.
+For example, given a type that represents a database schema and a query that is checked against it, a type provider could read the schema of a real database during type checking.</p>
+</div>
+<div class="paragraph">
+<p><span class="logo">Idris</span> type providers use the ordinary execution semantics of <span class="logo">Idris</span> to run an IO action and extract the result.
+This result is then saved as a constant in the compiled code.
+It can be a type, in which case it is used like any other type, or it can be a value, in which case it can be used as any other value, including as an index in types.</p>
+</div>
+<div class="paragraph">
+<p>Type providers are still an experimental extension.
+To enable the extension, use the <code>%language</code> directive:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>%language TypeProviders</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A provider <code>p</code> for some type <code>t</code> is simply an expression of type <code>IO (Provider t)</code>.
+The <code>%provide</code> directive causes the type checker to execute the action and bind the result to a name.
+This is perhaps best illustrated with a simple example.
+The type provider <code>fromFile</code> reads a text file.
+If the file consists of the string <code>Int</code>, then the type <code>Int</code> will be provided.
+Otherwise, it will provide the type <code>Nat</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>strToType : String -&gt; Type
+strToType "Int" = Int
+strToType _ = Nat
+
+fromFile : String -&gt; IO (Provider Type)
+fromFile fname = do str &lt;- readFile fname
+                    return (Provide (strToType (trim str)))</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We then use the <code>%provide</code> directive:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>%provide (T1 : Type) with fromFile "theType"
+
+foo : T1
+foo = 2</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If the file named <code>theType</code> consists of the word <code>Int</code>, then <code>foo</code> will be an <code>Int</code>.
+Otherwise, it will be a <code>Nat</code>.
+When <span class="logo">Idris</span> encounters the directive, it first checks that the provider expression <code>fromFile theType</code> has type <code>IO (Provider Type)</code>.
+Next, it executes the provider.
+If the result is <code>Provide t</code>, then <code>T1</code> is defined as <code>t</code>.
+Otherwise, the result is an error.</p>
+</div>
+<div class="paragraph">
+<p>Our datatype <code>Provider t</code> has the following definition:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>data Provider a = Error String
+                | Provide a</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We have already seen the <code>Provide</code> constructor.
+The <code>Error</code> constructor allows type providers to return useful error messages.
+The example in this section was purposefully simple.
+More complex type provider implementations, including a statically-checked SQLite binding, are available in an external collection<span class="footnote">[<a id="_footnoteref_6" class="footnote" href="#_footnote_6" title="View footnote.">6</a>]</span>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="c-target">C Target</h3>
+<div class="paragraph">
+<p>The default target of <span class="logo">Idris</span> is C.
+Compiling via :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ idris hello.idr -o hello</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>is equivalent to :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ idris --codegen C hello.idr -o hello</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When the command above is used, a temporary C source is generated, which is then compiled into an executable named <code>hello</code>.</p>
+</div>
+<div class="paragraph">
+<p>In order to view the generated C code, compile via :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ idris hello.idr -S -o hello.c</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To turn optimisations on, use the <code>%flag C</code> pragma within the code, as is shown below :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>module Main
+%flag C "-O3"
+
+factorial : Int -&gt; Int
+factorial 0 = 1
+factorial n = n * (factorial (n-1))
+
+main : IO ()
+main = do
+     putStrLn $ show $ factorial 3</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="javascript-target">JavaScript Target</h3>
+<div class="paragraph">
+<p><span class="logo">Idris</span> is capable of producing <em>JavaScript</em> code that can be run in a browser as well as in the <em>NodeJS</em> environment or alike.
+One can use the FFI to communicate with the <em>JavaScript</em> ecosystem.</p>
+</div>
+<div class="sect3">
+<h4 id="code-generation">Code Generation</h4>
+<div class="paragraph">
+<p>Code generation is split into two separate targets.
+To generate code that is tailored for running in the browser issue the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ idris --codegen javascript hello.idr -o hello.js</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The resulting file can be embedded into your HTML just like any other <em>JavaScript</em> code.</p>
+</div>
+<div class="paragraph">
+<p>Generating code for <em>NodeJS</em> is slightly different.
+<span class="logo">Idris</span> outputs a <em>JavaScript</em> file that can be directly executed via <code>node</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ idris --codegen node hello.idr -o hello
+$ ./hello
+Hello world</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Take into consideration that the <em>JavaScript</em> code generator is using <code>console.log</code> to write text to <code>stdout</code>, this means that it will automatically add a newline to the end of each string.
+This behaviour does not show up in the <em>NodeJS</em> code generator.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="using-the-ffi">Using the FFI</h4>
+<div class="paragraph">
+<p>To write a useful application we need to communicate with the outside world.
+Maybe we want to manipulate the DOM or send an Ajax request.
+For this task we can use the FFI.
+Since most <em>JavaScript</em> APIs demand callbacks we need to extend the FFI so we can pass functions as arguments.</p>
+</div>
+<div class="paragraph">
+<p>The <em>JavaScript</em> FFI works a little bit differently than the regular FFI.
+It uses positional arguments to directly insert our arguments into a piece of <em>JavaScript</em> code.</p>
+</div>
+<div class="paragraph">
+<p>One could use the primitive addition of <em>JavaScript</em> like so:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>module Main
+
+primPlus : Int -&gt; Int -&gt; IO Int
+primPlus a b = mkForeign (FFun "%0 + %1" [FInt, FInt] FInt) a b
+
+main : IO ()
+main = do
+  a &lt;- primPlus 1 1
+  b &lt;- primPlus 1 2
+  print (a, b)</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Notice that the <code>%n</code> notation qualifies the position of the <code>n</code>-th argument given to our foreign function starting from 0.
+When you need a percent sign rather than a position simply use <code>%%</code> instead.</p>
+</div>
+<div class="paragraph">
+<p>Passing functions to a foreign function is very similar.
+Let’s assume that we want to call the following function from the <em>JavaScript</em> world:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>function twice(f, x) {
+  return f(f(x));
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We obviously need to pass a function <code>f</code> here (we can infer it from the way we use <code>f</code> in <code>twice</code>, it would be more obvious if <em>JavaScript</em> had types).</p>
+</div>
+<div class="paragraph">
+<p>The <em>JavaScript</em> FFI is able to understand functions as arguments when you give it something of type <code>FFunction</code>.
+The following example code calls <code>twice</code> in <em>JavaScript</em> and returns the result to our <span class="logo">Idris</span> program:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>module Main
+
+twice : (Int -&gt; Int) -&gt; Int -&gt; IO Int
+twice f x = mkForeign (
+  FFun "twice(%0,%1)" [FFunction FInt FInt, FInt] FInt
+) f x
+
+main : IO ()
+main = do
+  a &lt;- twice (+1) 1
+  print a</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The program outputs <code>3</code>, just like we expected.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="including-external-javascript-files">Including external <em>JavaScript</em> files</h4>
+<div class="paragraph">
+<p>Whenever one is working with <em>JavaScript</em> one might want to include external libraries or just some functions that she or he wants to call via FFI which are stored in external files.
+The <em>JavaScript</em> and <em>NodeJS</em> code generators understand the <code>%include</code> directive.
+Keep in mind that <em>JavaScript</em> and <em>NodeJS</em> are handled as different code generators, therefore you will have to state which one you want to target.
+This means that you can include different files for <em>JavaScript</em> and <em>NodeJS</em> in the same <span class="logo">Idris</span> source file.</p>
+</div>
+<div class="paragraph">
+<p>So whenever you want to add an external <em>JavaScript</em> file you can do this like so:</p>
+</div>
+<div class="paragraph">
+<p>For <em>NodeJS</em>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>  %include Node "path/to/external.js"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And for use in the browser:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>  %include JavaScript "path/to/external.js"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The given files will be added to the top of the generated code.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="including-nodejs-modules">Including <em>NodeJS</em> modules</h4>
+<div class="paragraph">
+<p>The <em>NodeJS</em> code generator can also include modules with the <code>%lib</code> directive.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>  %lib Node "fs"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This directive compiles into the following <em>JavaScript</em></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>  var fs = require("fs");</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="shrinking-down-generated-javascript">Shrinking down generated <em>JavaScript</em></h4>
+<div class="paragraph">
+<p><span class="logo">Idris</span> can produce very big chunks of <em>JavaScript</em> code.
+However, the generated code can be minified using the <code>closure-compiler</code> from Google.
+Any other minifier is also suitable but <code>closure-compiler</code> offers advanced compilation that does some aggressive inlining and code elimination.
+<span class="logo">Idris</span> can take full advantage of this compilation mode and it’s highly recommended to use it when shipping a <em>JavaScript</em> application written in Idris.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="cumulativity">Cumulativity</h3>
+<div class="paragraph">
+<p>Since values can appear in types and <em>vice versa</em>, it is natural that types themselves have types.
+For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>*universe&gt; :t Nat
+Nat : Type
+*universe&gt; :t Vect
+Vect : Nat -&gt; Type -&gt; Type</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>But what about the type of <code>Type</code>? If we ask <span class="logo">Idris</span> it reports</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>*universe&gt; :t Type
+Type : Type 1</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If <code>Type</code> were its own type, it would lead to an inconsistency due to Girard’s paradox <a href="#girard-thesis">[girard-thesis]</a>, so internally there is a <em>hierarchy</em> of types (or <em>universes</em>):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Type : Type 1 : Type 2 : Type 3 : ...</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Universes are <em>cumulative</em>, that is, if <code>x : Type n</code> we can also have that <code>x : Type m</code>, as long as <code>n &lt; m</code>.
+The typechecker generates such universe constraints and reports an error if any inconsistencies are found.
+Ordinarily, a programmer does not need to worry about this, but it does prevent (contrived) programs such as the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>myid : (a : Type) -&gt; a -&gt; a
+myid _ x = x
+
+idid :  (a : Type) -&gt; a -&gt; a
+idid = myid _ myid</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The application of <code>myid</code> to itself leads to a cycle in the universe hierarchy — <code>myid</code>’s first argument is a <code>Type</code>, which cannot be at a lower level than required if it is applied to itself.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="further-reading">Further Reading</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Further information about <span class="logo">Idris</span> programming, and programming with dependent types in general, can be obtained from various sources:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <span class="logo">Idris</span> web site (<a href="http://idris-lang.org/" class="bare">http://idris-lang.org/</a>) and by asking questions on the mailing list.</p>
+</li>
+<li>
+<p>The IRC channel <code>#idris</code>, on chat.freenode.net.</p>
+</li>
+<li>
+<p>The wiki (<a href="https://github.com/idris-lang/Idris-dev/wiki/" class="bare">https://github.com/idris-lang/Idris-dev/wiki/</a>) has further user provided information, in particular:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/idris-lang/Idris-dev/wiki/Manual" class="bare">https://github.com/idris-lang/Idris-dev/wiki/Manual</a></p>
+</li>
+<li>
+<p><a href="https://github.com/idris-lang/Idris-dev/wiki/Language-Features" class="bare">https://github.com/idris-lang/Idris-dev/wiki/Language-Features</a></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Examining the prelude and exploring the <code>samples</code> in the distribution.
+The <span class="logo">Idris</span> source can be found online at: <a href="https://github.com/idris-lang/Idris-dev" class="bare">https://github.com/idris-lang/Idris-dev</a>.</p>
+</li>
+<li>
+<p>Existing projects on the <code>Idris Hackers</code> web space: <a href="http://idris-hackers.github.io" class="bare">http://idris-hackers.github.io</a>.</p>
+</li>
+<li>
+<p>Various papers (e.g. <a href="#plpv11">[plpv11]</a>, <a href="#scrap-engine">[scrap-engine]</a>, <a href="#res-dsl-padl12">[res-dsl-padl12]</a>).
+Although these mostly describe older versions of <span class="logo">Idris</span>.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_bibliography">Bibliography</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a id="plpv11"></a>[plpv11] E. Brady. Idris — systems programming meets full dependent types. In <em>Programming Languages meets Program Verification (PLPV 2011)</em>, pages 43-54, 2011.</p>
+</li>
+<li>
+<p><a id="cbconc-fi"></a>[cbconc-fi] E. Brady and K. Hammond. Correct-by-construction concurrency: Using dependent types to verify implementations of effectful resource usage protocols. <em>Fundamenta Informaticae</em>, 102(2):145-176, 2010.</p>
+</li>
+<li>
+<p><a id="scrap-engine"></a>[scrap-engine] E. Brady and K. Hammond. Scrapping your inefficient engine: using partial evaluation to improve domain-specific language implementation. In <em>ICFP '10: Proceedings of the 15th ACM SIGPLAN International Conference on Functional Programming</em>, pages 297-308, New York, NY, USA, 2010. ACM.</p>
+</li>
+<li>
+<p><a id="res-dsl-padl12"></a>[res-dsl-padl12] E. Brady and K. Hammond. Resource-safe systems programming with embedded domain specific languages.
+In <em>Practical Applications of Declarative Languages 2012</em>, LNCS. Springer, 2012. To appear.</p>
+</li>
+<li>
+<p><a id="girard-thesis"></a>[girard-thesis] J.-Y. Girard. <em>Interprétation fonctionelle et élimination des coupures de l&#8217;arithmétique d&#8217;ordre supérieur</em>. PhD thesis, Université Paris VII, 1972.</p>
+</li>
+<li>
+<p><a id="howard"></a>[howard] W. A. Howard. The formulae-as-types notion of construction. In J. P. Seldin and J. R. Hindley, editors,
+<em>To H. B. Curry: Essays on combinatory logic, lambda calculus and formalism</em>. Academic Press, 1980.
+A reprint of an unpublished manuscript from 1969.</p>
+</li>
+<li>
+<p><a id="view-left"></a>[view-left] C. McBride and R. Paterson. The view from the left. <em>J. Funct. Program.</em>, 14(1):69-111, 2004.</p>
+</li>
+<li>
+<p><a id="idioms"></a>[idioms] C. McBride and R. Paterson. Applicative programming with effects. <em>J. Funct. Program.</em>, 18:1-13, January 2008.</p>
+</li>
+<li>
+<p><a id="haskell-report"></a>[haskell-report] S. Peyton Jones and others, “Haskell 98 Language and Libraries&#8201;&#8212;&#8201;The Revised Report.” Dec-2002.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="footnotes">
+<hr>
+<div class="footnote" id="_footnote_1">
+<a href="#_footnoteref_1">1</a>. Typically, and perhaps confusingly, referred to in the dependently typed programming literature as &#8220;vectors&#8221;
+</div>
+<div class="footnote" id="_footnote_2">
+<a href="#_footnoteref_2">2</a>. <a href="http://www.haskell.org" class="bare">http://www.haskell.org</a>
+</div>
+<div class="footnote" id="_footnote_3">
+<a href="#_footnoteref_3">3</a>. <a href="http://ocaml.org" class="bare">http://ocaml.org</a>
+</div>
+<div class="footnote" id="_footnote_4">
+<a href="#_footnoteref_4">4</a>. <a href="https://github.com/idris-hackers/idris-vim" class="bare">https://github.com/idris-hackers/idris-vim</a>
+</div>
+<div class="footnote" id="_footnote_5">
+<a href="#_footnoteref_5">5</a>. <a href="https://github.com/idris-hackers/idris-emacs" class="bare">https://github.com/idris-hackers/idris-emacs</a>
+</div>
+<div class="footnote" id="_footnote_6">
+<a href="#_footnoteref_6">6</a>. <a href="https://github.com/david-christiansen/idris-type-providers" class="bare">https://github.com/david-christiansen/idris-type-providers</a>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2015-01-22 13:12:52 MSK
+</div>
+</div>
+</body>
+</html>
