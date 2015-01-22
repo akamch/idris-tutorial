@@ -1,0 +1,18 @@
+= Idris tutorial
+
+== Requirements
+
+Asciidoctor requires https://github.com/asciidoctor/asciidoctor#requirements[Ruby]:
+
+ $ gem install asciidoctor
+
+To generate HTML run
+
+ $ asciidoctor idris-tutorial.adoc
+
+Building EPUB and PDF requires `asciidoc` (PDF also needs FOP):
+
+ $ sudo apt-get install asciidoc fop
+ $ asciidoctor -b docbook idris-tutorial.adoc
+ $ a2x -f epub idris-tutorial.xml
+ $ a2x -k -fpdf -darticle --fop idris-tutorial.xml
