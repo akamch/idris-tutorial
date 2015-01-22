@@ -34,8 +34,8 @@ Effectively, it adds this value as an extra argument, which we place after the v
 
 If the intermediate computation itself has a dependent type, then the result can affect the forms of other arguments — we can learn the form of one value by testing another.
 For example, a `Nat` is either even or odd.
-If it’s even it will be the sum of two equal `Nat`s.
-Otherwise, it is the sum of two equal `Nat`s plus one:
+If it’s even it will be the sum of two equal `Nats`.
+Otherwise, it is the sum of two equal `Nats` plus one:
 
 ----
 data Parity : Nat -> Type where

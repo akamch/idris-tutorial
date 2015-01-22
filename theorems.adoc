@@ -102,7 +102,7 @@ When things get even slightly more complicated, it becomes too much to think abo
 
 Instead of writing the proof in one go, we can use [logo]#Idris#’s interactive proof mode.
 To do this, we write the general _structure_ of the proof, and use the interactive mode to complete the details.
-We’ll be constructing the proof by __induction__, so we write the cases for `Z` and `S`, with a recursive call in the `S` case giving the inductive hypothesis, and insert _metavariables_ for the rest of the definition:
+We’ll be constructing the proof by _induction_, so we write the cases for `Z` and `S`, with a recursive call in the `S` case giving the inductive hypothesis, and insert _metavariables_ for the rest of the definition:
 
 ----
 plusReducesZ' : (n:Nat) -> n = plus n Z

@@ -198,7 +198,7 @@ instance Monad Maybe where
     (Just x) >>= k = k x
 ----
 
-Using this we can, for example, define a function which adds two `Maybe Int`s, using the monad to encapsulate the error handling:
+Using this we can, for example, define a function which adds two `Maybe Ints`, using the monad to encapsulate the error handling:
 
 ----
 m_add : Maybe Int -> Maybe Int -> Maybe Int
@@ -347,7 +347,7 @@ data Expr = Var String      -- variables
           | Add Expr Expr   -- addition
 ----
 
-Evaluation will take place relative to a context mapping variables (represented as `String` s) to integer values, and can possibly fail.
+Evaluation will take place relative to a context mapping variables (represented as `Strings`) to integer values, and can possibly fail.
 We define a data type `Eval` to wrap an evaluator:
 
 ----
@@ -414,7 +414,7 @@ instance [myord] Ord Nat where
 
 This declares an instance as normal, but with an explicit name, `myord`.
 The syntax `compare @{myord}` gives an explicit instance to `compare`, otherwise it would use the default instance for `Nat`.
-We can use this, for example, to sort a list of `Nat`s in reverse.
+We can use this, for example, to sort a list of `Nats` in reverse.
 Given the following list:
 
 ----

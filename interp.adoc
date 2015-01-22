@@ -69,7 +69,7 @@ data HasType : (i : Fin n) -> Vect n Ty -> Ty -> Type where
     Pop  : HasType k G t -> HasType (FS k) (u :: G) t
 ----
 
-We can treat _Stop_ as a proof that the most recently defined variable is well-typed, and _Pop n_ as a proof that, if the `n`th most recently defined variable is well-typed, so is the `n+1`th.
+We can treat _Stop_ as a proof that the most recently defined variable is well-typed, and _Pop n_ as a proof that, if the `n`-th most recently defined variable is well-typed, so is the `n+1`-th.
 In practice, this means we use `Stop` to refer to the most recently defined variable, `Pop Stop` to refer to the next, and so on, via the `Var` constructor:
 
 ----

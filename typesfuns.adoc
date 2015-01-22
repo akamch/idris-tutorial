@@ -205,7 +205,7 @@ In the type of `::`, we state explicitly that an element of type `a` and a tail 
 
 We can define functions on dependent types such as `Vect` in the same way as on simple types such as `List` and `Nat` above, by pattern matching.
 The type of a function over `Vect` will describe what happens to the lengths of the vectors involved.
-For example, `++`, defined as follows, appends two `Vect`s:
+For example, `++`, defined as follows, appends two `Vects`:
 
 [source, idris]
 ----
