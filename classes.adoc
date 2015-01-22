@@ -175,7 +175,7 @@ class Functor f => Applicative (f : Type -> Type) where
 Monads and `do`-notation
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-The `Monad` class allows us to encapsulate binding and computation, and is the basis of `do`-notation introduced in Section <<sect:do>>.
+The `Monad` class allows us to encapsulate binding and computation, and is the basis of `do`-notation introduced in <<sect:do>>.
 It extends `Applicative` as defined above, and is defined as follows:
 
 ----
@@ -259,7 +259,7 @@ let y = 42 in do y' <- print y
 Monad comprehensions
 ^^^^^^^^^^^^^^^^^^^^
 
-The list comprehension notation we saw in Section <<sec:listcomp>> is more general, and applies to anything which is an instance of both `Monad` and `Alternative`:
+The list comprehension notation we saw in <<sec:listcomp>> is more general, and applies to anything which is an instance of both `Monad` and `Alternative`:
 
 ----
 class Applicative f => Alternative (f : Type -> Type) where

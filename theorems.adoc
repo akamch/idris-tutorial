@@ -27,7 +27,7 @@ twoPlusTwo = Refl
 === The Empty Type
 
 There is an empty type, stem:[\bot], which has no constructors.
-It is therefore impossible to construct an element of the empty type, at least without using a partially defined or general recursive function (see Section <<sect:totality>> for more details).
+It is therefore impossible to construct an element of the empty type, at least without using a partially defined or general recursive function (see <<sect:totality>> for more details).
 We can therefore use the empty type to prove that something is impossible, for example zero is never equal to a successor:
 
 ----
@@ -274,7 +274,7 @@ Type checking ./theorems.idr
 theorems.idr:25:empty2 is possibly not total due to recursive path empty2
 ----
 
-Reassuringly, our proof in Section <<sect:empty>> that the zero and successor constructors are disjoint is total:
+Reassuringly, our proof in <<sect:empty>> that the zero and successor constructors are disjoint is total:
 
 ----
 *theorems> :total disjoint
