@@ -63,7 +63,7 @@ natToBin k with (parity k)
 ----
 
 The value of the result of `parity k` affects the form of `k`, because the result of `parity k` depends on `k`.
-So, as well as the patterns for the result of the intermediate computation (`Even` and `odd`) right of the `\mid`, we also write how the results affect the other patterns left of the latexmath:[$\mid$].
+So, as well as the patterns for the result of the intermediate computation (`Even` and `odd`) right of the stem:[\mid], we also write how the results affect the other patterns left of the stem:[\mid].
 Note that there is a function in the patterns (`+`) and repeated occurrences of `j`—this is allowed because another argument has determined the form of these patterns.
 
 We will return to this function in <<sect:provisional>> to complete the definition of `parity`.
