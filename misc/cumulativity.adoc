@@ -1,0 +1,40 @@
+[[cumulativity]]
+Cumulativity
+~~~~~~~~~~~~
+
+Since values can appear in types and _vice versa_, it is natural that types themselves have types.
+For example:
+
+----
+*universe> :t Nat
+Nat : Type
+*universe> :t Vect
+Vect : Nat -> Type -> Type
+----
+
+But what about the type of `Type`? If we ask [logo]#Idris# it reports
+
+----
+*universe> :t Type
+Type : Type 1
+----
+
+If `Type` were its own type, it would lead to an inconsistency due to Girard’s paradox <<girard-thesis>>, so internally there is a _hierarchy_ of types (or _universes_):
+
+----
+Type : Type 1 : Type 2 : Type 3 : ...
+----
+
+Universes are _cumulative_, that is, if `x : Type n` we can also have that `x : Type m`, as long as `n < m`.
+The typechecker generates such universe constraints and reports an error if any inconsistencies are found.
+Ordinarily, a programmer does not need to worry about this, but it does prevent (contrived) programs such as the following:
+
+----
+myid : (a : Type) -> a -> a
+myid _ x = x
+
+idid :  (a : Type) -> a -> a
+idid = myid _ myid
+----
+
+The application of `myid` to itself leads to a cycle in the universe hierarchy — `myid`’s first argument is a `Type`, which cannot be at a lower level than required if it is applied to itself.

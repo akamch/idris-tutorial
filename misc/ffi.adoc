@@ -1,0 +1,91 @@
+[[foreign-function-calls]]
+Foreign function calls
+~~~~~~~~~~~~~~~~~~~~~~
+
+For practical programming, it is often necessary to be able to use external libraries, particularly for interfacing with the operating system, file system, networking, __et cetera__.
+[logo]#Idris# provides a lightweight foreign function interface for achieving this, as part of the prelude.
+For this, we assume a certain amount of knowledge of C and the `gcc` compiler.
+First, we define a datatype which describes the external types we can handle:
+
+----
+data FTy = FInt | FFloat | FChar | FString | FPtr | FUnit
+----
+
+Each of these corresponds directly to a C type.
+Respectively: `int`, `double`, `char`, `char*`, `void*` and `void`.
+There is also a translation to a concrete [logo]#Idris# type, described by the following function:
+
+----
+interpFTy : FTy -> Type
+interpFTy FInt    = Int
+interpFTy FFloat  = Float
+interpFTy FChar   = Char
+interpFTy FString = String
+interpFTy FPtr    = Ptr
+interpFTy FUnit   = ()
+----
+
+A foreign function is described by a list of input types and a return type, which can then be converted to an [logo]#Idris# type:
+
+----
+ForeignTy : (xs:List FTy) -> (t:FTy) -> Type
+----
+
+A foreign function is assumed to be impure, so `ForeignTy` builds an `IO` type, for example:
+
+----
+Idris> ForeignTy [FInt, FString] FString
+Int -> String -> IO String : Type
+
+Idris> ForeignTy [FInt, FString] FUnit 
+Int -> String -> IO () : Type
+----
+
+We build a call to a foreign function by giving the name of the function, a list of argument types and the return type.
+The built in construct `mkForeign` converts this description to a function callable by Idris:
+
+----
+data Foreign : Type -> Type where
+    FFun : String -> (xs:List FTy) -> (t:FTy) -> 
+           Foreign (ForeignTy xs t)
+
+mkForeign : Foreign x -> x
+----
+
+Note that the compiler expects `mkForeign` to be fully applied to build a complete foreign function call.
+For example, the `putStr` function is implemented as follows, as a call to an external function `putStr` defined in the run-time system:
+
+----
+putStr : String -> IO ()
+putStr x = mkForeign (FFun "putStr" [FString] FUnit) x
+----
+
+[[include-and-linker-directives]]
+Include and linker directives
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Foreign function calls are translated directly to calls to C functions, with appropriate conversion between the [logo]#Idris# representation of a value and the C representation.
+Often this will require extra libraries to be linked in, or extra header and object files.
+This is made possible through the following directives:
+
+* `%lib target x` — include the `libx` library.
+If the target is `C` this is equivalent to passing the `-lx` option to `gcc`.
+If the target is Java the library will be interpreted as a `groupId:artifactId:packaging:version` dependency coordinate for maven.
+* `%include target x` — use the header file or import `x` for the given back end target.
+* `%link target x.o` — link with the object file `x.o` when using the given back end target.
+* `%dynamic x.so` — dynamically link the interpreter with the shared object `x.so`.
+
+[[testing-foreign-function-calls]]
+Testing foreign function calls
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Normally, the [logo]#Idris# interpreter (used for typechecking and at the REPL) will not perform IO actions.
+Additionally, as it neither generates C code nor compiles to machine code, the `%lib`, `%include` and `%link` directives have no effect.
+IO actions and FFI calls can be tested using the special REPL command `:x EXPR`, and C libraries can be dynamically loaded in the interpreter by using the `:dynamic` command or the `%dynamic` directive.
+For example:
+
+----
+Idris> :dynamic libm.so
+Idris> :x unsafePerformIO ((mkForeign (FFun "sin" [FFloat] FFloat)) 1.6)
+0.9995736030415051 : Float
+----

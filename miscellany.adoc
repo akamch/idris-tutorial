@@ -1,0 +1,23 @@
+[[miscellany]]
+== Miscellany
+
+In this section we discuss a variety of additional features:
+
+[cols="2",frame="none",grid="none"]
+|===
+a|
+* auto, implicit, and default arguments;
+* literate programming;
+* interfacing with external libraries through the foreign function interface;
+a|
+* type providers;
+* code generation; and
+* the universe hierarchy.
+|===
+
+include::misc/args.adoc[]
+include::misc/literate.adoc[]
+include::misc/ffi.adoc[]
+include::misc/type-providers.adoc[]
+include::misc/codegen.adoc[]
+include::misc/cumulativity.adoc[]

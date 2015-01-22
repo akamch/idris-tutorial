@@ -1,0 +1,15 @@
+[[further-reading]]
+== Further Reading
+
+Further information about [logo]#Idris# programming, and programming with dependent types in general, can be obtained from various sources:
+
+* The [logo]#Idris# web site (http://idris-lang.org/) and by asking questions on the mailing list.
+* The IRC channel `#idris`, on chat.freenode.net.
+* The wiki (https://github.com/idris-lang/Idris-dev/wiki/) has further user provided information, in particular:
+** https://github.com/idris-lang/Idris-dev/wiki/Manual
+** https://github.com/idris-lang/Idris-dev/wiki/Language-Features
+* Examining the prelude and exploring the `samples` in the distribution.
+The [logo]#Idris# source can be found online at: https://github.com/idris-lang/Idris-dev.
+* Existing projects on the `Idris Hackers` web space: http://idris-hackers.github.io.
+* Various papers (e.g. <<plpv11>>, <<scrap-engine>>, <<res-dsl-padl12>>).
+Although these mostly describe older versions of [logo]#Idris#.

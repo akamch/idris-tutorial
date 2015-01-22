@@ -1,0 +1,43 @@
+= Programming in [logo]#Idris#: A Tutorial
+The Idris Community
+:compat-mode:
+:linkcss:
+:pagenums:
+:revdate: 15th January 2015
+//:source-highlighter: pygments
+//:pygments-style: tango
+:sourcedir: examples
+:stem: latexmath
+:stylesdir: css
+:stylesheet: idris-tutorial.css
+:toc:
+:version: 0.9.16
+//:cons: x :: xs
+
+include::intro.adoc[]
+
+include::starting.adoc[]
+
+include::typesfuns.adoc[]
+
+include::classes.adoc[]
+
+include::modules.adoc[]
+
+include::interp.adoc[]
+
+include::views.adoc[]
+
+include::theorems.adoc[]
+
+include::provisional.adoc[]
+
+include::interactive.adoc[]
+
+include::syntax.adoc[]
+
+include::miscellany.adoc[]
+
+include::conclusions.adoc[]
+
+include::bibliography.adoc[]

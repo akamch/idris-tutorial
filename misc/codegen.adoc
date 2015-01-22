@@ -1,0 +1,181 @@
+[[c-target]]
+C Target
+~~~~~~~~
+
+The default target of [logo]#Idris# is C.
+Compiling via :
+
+----
+$ idris hello.idr -o hello
+----
+
+is equivalent to :
+
+----
+$ idris --codegen C hello.idr -o hello
+----
+
+When the command above is used, a temporary C source is generated, which is then compiled into an executable named `hello`.
+
+In order to view the generated C code, compile via :
+
+----
+$ idris hello.idr -S -o hello.c
+----
+
+To turn optimisations on, use the `%flag C` pragma within the code, as is shown below :
+
+----
+module Main
+%flag C "-O3"
+
+factorial : Int -> Int
+factorial 0 = 1
+factorial n = n * (factorial (n-1))
+
+main : IO ()
+main = do      
+     putStrLn $ show $ factorial 3
+----
+
+[[javascript-target]]
+JavaScript Target
+~~~~~~~~~~~~~~~~~
+
+[logo]#Idris# is capable of producing _JavaScript_ code that can be run in a browser as well as in the _NodeJS_ environment or alike.
+One can use the FFI to communicate with the _JavaScript_ ecosystem.
+
+[[code-generation]]
+Code Generation
+^^^^^^^^^^^^^^^
+
+Code generation is split into two separate targets.
+To generate code that is tailored for running in the browser issue the following command:
+
+----
+$ idris --codegen javascript hello.idr -o hello.js
+----
+
+The resulting file can be embedded into your HTML just like any other _JavaScript_ code.
+
+Generating code for _NodeJS_ is slightly different.
+[logo]#Idris# outputs a _JavaScript_ file that can be directly executed via `node`.
+
+----
+$ idris --codegen node hello.idr -o hello
+$ ./hello
+Hello world
+----
+
+Take into consideration that the _JavaScript_ code generator is using `console.log` to write text to `stdout`, this means that it will automatically add a newline to the end of each string.
+This behaviour does not show up in the _NodeJS_ code generator.
+
+[[using-the-ffi]]
+Using the FFI
+^^^^^^^^^^^^^
+
+To write a useful application we need to communicate with the outside world.
+Maybe we want to manipulate the DOM or send an Ajax request.
+For this task we can use the FFI.
+Since most _JavaScript_ APIs demand callbacks we need to extend the FFI so we can pass functions as arguments.
+
+The _JavaScript_ FFI works a little bit differently than the regular FFI.
+It uses positional arguments to directly insert our arguments into a piece of _JavaScript_ code.
+
+One could use the primitive addition of _JavaScript_ like so:
+
+----
+module Main
+
+primPlus : Int -> Int -> IO Int
+primPlus a b = mkForeign (FFun "%0 + %1" [FInt, FInt] FInt) a b
+
+main : IO ()
+main = do
+  a <- primPlus 1 1
+  b <- primPlus 1 2
+  print (a, b)
+----
+
+Notice that the `%n` notation qualifies the position of the `n`-th argument given to our foreign function starting from 0.
+When you need a percent sign rather than a position simply use `%%` instead.
+
+Passing functions to a foreign function is very similar.
+Let’s assume that we want to call the following function from the _JavaScript_ world:
+
+----
+function twice(f, x) {
+  return f(f(x));
+}
+----
+
+We obviously need to pass a function `f` here (we can infer it from the way we use `f` in `twice`, it would be more obvious if _JavaScript_ had types).
+
+The _JavaScript_ FFI is able to understand functions as arguments when you give it something of type `FFunction`.
+The following example code calls `twice` in _JavaScript_ and returns the result to our [logo]#Idris# program:
+
+----
+module Main
+
+twice : (Int -> Int) -> Int -> IO Int
+twice f x = mkForeign (
+  FFun "twice(%0,%1)" [FFunction FInt FInt, FInt] FInt
+) f x
+
+main : IO ()
+main = do
+  a <- twice (+1) 1
+  print a
+----
+
+The program outputs `3`, just like we expected.
+
+[[including-external-javascript-files]]
+Including external _JavaScript_ files
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Whenever one is working with _JavaScript_ one might want to include external libraries or just some functions that she or he wants to call via FFI which are stored in external files.
+The _JavaScript_ and _NodeJS_ code generators understand the `%include` directive.
+Keep in mind that _JavaScript_ and _NodeJS_ are handled as different code generators, therefore you will have to state which one you want to target.
+This means that you can include different files for _JavaScript_ and _NodeJS_ in the same [logo]#Idris# source file.
+
+So whenever you want to add an external _JavaScript_ file you can do this like so:
+
+For __NodeJS__:
+
+----
+  %include Node "path/to/external.js"
+----
+
+And for use in the browser:
+
+----
+  %include JavaScript "path/to/external.js"
+----
+
+The given files will be added to the top of the generated code.
+
+[[including-nodejs-modules]]
+Including _NodeJS_ modules
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The _NodeJS_ code generator can also include modules with the `%lib` directive.
+
+----
+  %lib Node "fs"
+----
+
+This directive compiles into the following _JavaScript_
+
+----
+  var fs = require("fs");
+----
+
+[[shrinking-down-generated-javascript]]
+Shrinking down generated _JavaScript_
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[logo]#Idris# can produce very big chunks of _JavaScript_ code.
+However, the generated code can be minified using the `closure-compiler` from Google.
+Any other minifier is also suitable but `closure-compiler` offers advanced compilation that does some aggressive inlining and code elimination.
+[logo]#Idris# can take full advantage of this compilation mode and it’s highly recommended to use it when shipping a _JavaScript_ application written in Idris.

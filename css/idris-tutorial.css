@@ -1,0 +1,5 @@
+@import url("asciidoctor.css");
+
+.logo, .epigram {
+  font-variant: small-caps;
+}

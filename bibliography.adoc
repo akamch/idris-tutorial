@@ -1,0 +1,24 @@
+[bibliography]
+== Bibliography ==
+
+- [[[plpv11]]] E. Brady. Idris — systems programming meets full dependent types. In _Programming Languages meets Program Verification (PLPV 2011)_, pages 43-54, 2011.
+
+- [[[cbconc-fi]]] E. Brady and K. Hammond. Correct-by-construction concurrency: Using dependent types to verify implementations of effectful resource usage protocols. _Fundamenta Informaticae_, 102(2):145-176, 2010.
+
+- [[[scrap-engine]]] E. Brady and K. Hammond. Scrapping your inefficient engine: using partial evaluation to improve domain-specific language implementation. In _ICFP '10: Proceedings of the 15th ACM SIGPLAN International Conference on Functional Programming_, pages 297-308, New York, NY, USA, 2010. ACM.
+
+- [[[res-dsl-padl12]]] E. Brady and K. Hammond. Resource-safe systems programming with embedded domain specific languages.
+In _Practical Applications of Declarative Languages 2012_, LNCS. Springer, 2012. To appear.
+
+- [[[girard-thesis]]] J.-Y. Girard. _Interprétation fonctionelle et élimination des coupures de l'arithmétique d'ordre supérieur_. PhD thesis, Université Paris VII, 1972.
+
+
+- [[[howard]]] W. A. Howard. The formulae-as-types notion of construction. In J. P. Seldin and J. R. Hindley, editors,
+_To H. B. Curry: Essays on combinatory logic, lambda calculus and formalism_. Academic Press, 1980.
+A reprint of an unpublished manuscript from 1969.
+
+- [[[view-left]]] C. McBride and R. Paterson. The view from the left. _J. Funct. Program._, 14(1):69-111, 2004.
+
+- [[[idioms]]] C. McBride and R. Paterson. Applicative programming with effects. _J. Funct. Program._, 18:1-13, January 2008.
+
+- [[[haskell-report]]] S. Peyton Jones and others, “Haskell 98 Language and Libraries -- The Revised Report.” Dec-2002.

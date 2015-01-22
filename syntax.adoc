@@ -1,0 +1,10 @@
+[[syntax-extensions]]
+== Syntax Extensions
+
+[logo]#Idris# supports the implementation of _Embedded Domain Specific Languages_ (EDSLs) in several ways <<res-dsl-padl12>>.
+One way, as we have already seen, is through extending `do` notation.
+Another important way is to allow extension of the core syntax.
+In this section we describe two ways of extending the syntax: `syntax` rules and `dsl` notation.
+
+include::syntax/rules.adoc[]
+include::syntax/dsl.adoc[]

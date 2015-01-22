@@ -1,0 +1,66 @@
+[[dsl-notation]]
+=== `dsl` notation
+
+The well-typed interpreter in Section <<sect:interp>> is a simple example of a common programming pattern with dependent types.
+Namely: describe an _object language_ and its type system with dependent types to guarantee that only well-typed programs can be represented, then program using that representation.
+Using this approach we can, for example, write programs for serialising binary data <<plpv11>> or running concurrent processes safely <<cbconc-fi>>.
+
+Unfortunately, the form of object language programs makes it rather hard to program this way in practice.
+Recall the factorial program in `Expr` for example:
+
+----
+fact : Expr G (TyFun TyInt TyInt)
+fact = Lam (If (Op (==) (Var Stop) (Val 0))
+               (Val 1) (Op (*) (app fact (Op (-) (Var Stop) (Val 1)))
+                               (Var Stop)))
+----
+
+Since this is a particularly useful pattern, Idris provides syntax overloading  to make it easier to program in such object languages:
+
+----
+dsl expr
+    lambda      = Lam
+    variable    = Var
+    index_first = Stop
+    index_next  = Pop
+----
+
+A `dsl` block describes how each syntactic construct is represented in an object language.
+Here, in the `expr` language, any Idris lambda is translated to a `Lam` constructor; any variable is translated to the `Var` constructor, using `Pop` and `Stop` to construct the de Bruijn index (i.e., to count how many bindings since the variable itself was bound).
+It is also possible to overload `let` in this way.
+We can now write `fact` as follows:
+
+----
+fact : Expr G (TyFun TyInt TyInt)
+fact = expr (\x => If (Op (==) x (Val 0))
+                      (Val 1) (Op (*) (app fact (Op (-) x (Val 1))) x))
+----
+
+In this new version, `expr` declares that the next expression will be overloaded.
+We can take this further, using idiom brackets, by declaring:
+
+----
+(<$>) : |(f : Expr G (TyFun a t)) -> Expr G a -> Expr G t
+(<$>) = \f, a => App f a
+
+pure : Expr G a -> Expr G a
+pure = id
+----
+
+Note that there is no need for these to be part of an instance of `Applicative`, since idiom bracket notation translates directly to the names `<$>` and `pure`, and ad-hoc type-directed overloading is allowed.
+We can now say:
+
+----
+fact : Expr G (TyFun TyInt TyInt)
+fact = expr (\x => If (Op (==) x (Val 0))
+                      (Val 1) (Op (*) [| fact (Op (-) x (Val 1)) |] x))
+----
+
+With some more ad-hoc overloading and type class instances, and a new syntax rule, we can even go as far as:
+
+----
+syntax "IF" [x] "THEN" [t] "ELSE" [e] = If x t e
+
+fact : Expr G (TyFun TyInt TyInt)
+fact = expr (\x => IF x == 0 THEN 1 ELSE [| fact (x - 1) |] * x)
+----

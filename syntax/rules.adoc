@@ -1,0 +1,73 @@
+[[syntax-rules]]
+=== `syntax` rules
+
+We have seen `if...then...else` expressions, but these are not built in.
+Instead, we can define a function in the prelude as follows (we have already seen this function in Section <<sect:lazy>>:
+
+----
+boolCase : (x:Bool) -> Lazy a -> Lazy a -> a;
+boolCase True  t e = t;
+boolCase False t e = e;
+----
+
+and then extend the core syntax with a `syntax` declaration:
+
+----
+syntax "if" [test] "then" [t] "else" [e] = boolCase test t e;
+----
+
+The left hand side of a `syntax` declaration describes the syntax rule, and the right hand side describes its expansion.
+The syntax rule itself consists of:
+
+* *Keywords* — here, `if`, `then` and `else`, which must be valid identifiers
+* *Non-terminals* — included in square brackets, `[test]`, `[t]` and `[e]` here, which stand for arbitrary expressions.
+To avoid parsing ambiguities, these expressions cannot use syntax extensions at the top level (though they can be used in parentheses).
+* *Names* — included in braces, which stand for names which may be bound on the right hand side.
+* *Symbols* — included in quotations marks, e.g.
+`:=`.
+This can also be used to include reserved words in syntax rules, such as `let` or `in`.
+
+The limitations on the form of a syntax rule are that it must include at least one symbol or keyword, and there must be no repeated variables standing for non-terminals.
+Any expression can be used, but if there are two non-terminals in a row in a rule, only simple expressions may be used (that is, variables, constants, or bracketed expressions).
+Rules can use previously defined rules, but may not be recursive.
+The following syntax extensions would therefore be valid:
+
+----
+syntax [var] ":=" [val]                    = Assign var val;
+syntax [test] "?" [t] ":" [e]              = if test then t else e;
+syntax "select" [x] "from" [t] "where" [w] = SelectWhere x t w;
+syntax "select" [x] "from" [t]             = Select x t;
+----
+
+Syntax macros can be further restricted to apply only in patterns (i.e., only on the left hand side of a pattern match clause) or only in terms (i.e. everywhere but the left hand side of a pattern match clause) by being marked as `pattern` or `term` syntax rules.
+For example, we might define an interval as follows, with a static check that the lower bound is below the upper bound using `so`:
+
+----
+data Interval : Type where
+   MkInterval : (lower : Float) -> (upper : Float) ->
+                so (lower < upper) -> Interval
+----
+
+We can define a syntax which, in patterns, always matches `oh` for the proof argument, and in terms requires a proof term to be provided:
+
+----
+pattern syntax "[" [x] "..." [y] "]" = MkInterval x y oh
+term    syntax "[" [x] "..." [y] "]" = MkInterval x y ?bounds_lemma
+----
+
+In terms, the syntax `[x...y]` will generate a proof obligation `bounds_lemma` (possibly renamed).
+
+Finally, syntax rules may be used to introduce alternative binding forms.
+For example, a `for` loop binds a variable on each iteration:
+
+----
+syntax "for" {x} "in" [xs] ":" [body] = forLoop xs (\x => body)
+
+main : IO ()
+main = do for x in [1..10]:
+              putStrLn ("Number " ++ show x)
+          putStrLn "Done!"
+----
+
+Note that we have used the `{x}` form to state that `x` represents a bound variable, substituted on the right hand side.
+We have also put `“in”` in quotation marks since it is already a reserved word.
