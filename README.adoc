@@ -1,5 +1,11 @@
 = Idris tutorial
 
+View the tutorial in
+http://akamch.github.io/idris-tutorial/idris-tutorial.html[HTML],
+http://akamch.github.io/idris-tutorial/idris-tutorial.epub[EPUB],
+http://akamch.github.io/idris-tutorial/idris-tutorial.pdf[PDF]. +
+(PDF at http://www.idris-lang.org/documentation/ is of better quality).
+
 == Requirements
 
 Asciidoctor requires https://github.com/asciidoctor/asciidoctor#requirements[Ruby]:
