@@ -164,11 +164,11 @@ Idris> map (*2) [1..10]
 Having defined `Functor`, we can define `Applicative` which abstracts the notion of function application:
 
 ----
-infixl 2 <$>
+infixl 2 <*>
 
 class Functor f => Applicative (f : Type -> Type) where
     pure  : a -> f a
-    (<$>) : f (a -> b) -> f a -> f b
+    (<*>) : f (a -> b) -> f a -> f b
 ----
 
 [[sec:monad]]
@@ -317,17 +317,17 @@ m_add' x y = m_app (m_app (Just (+)) x) y
 ----
 
 Rather than having to insert `m_app` everywhere there is an application, we can use to do the job for us.
-To do this, we can make `Maybe` an instance of `Applicative` as follows, where `<$>` is defined in the same way as `m_app` above (this is defined in the [logo]#Idris# library):
+To do this, we can make `Maybe` an instance of `Applicative` as follows, where `<*>` is defined in the same way as `m_app` above (this is defined in the [logo]#Idris# library):
 
 ----
 instance Applicative Maybe where
     pure = Just
 
-    (Just f) <$> (Just a) = Just (f a)
-    _        <$> _        = Nothing
+    (Just f) <*> (Just a) = Just (f a)
+    _        <*> _        = Nothing
 ----
 
-Using _idiom brackets_ we can use this instance as follows, where a function application `[| f a1 ...an |]` is translated into `pure f <$> a1 <$> ...<$> an`:
+Using _idiom brackets_ we can use this instance as follows, where a function application `[| f a1 ...an |]` is translated into `pure f <*> a1 <*> ...<*> an`:
 
 ----
 m_add' : Maybe Int -> Maybe Int -> Maybe Int
@@ -378,7 +378,7 @@ instance Functor Eval where
 instance Applicative Eval where
     pure x = MkEval (\e => Just x)
 
-    (<$>) (MkEval f) (MkEval g) = MkEval (\x => app (f x) (g x)) where
+    (<*>) (MkEval f) (MkEval g) = MkEval (\x => app (f x) (g x)) where
         app : Maybe (a -> b) -> Maybe a -> Maybe b
         app (Just fx) (Just gx) = Just (fx gx)
         app _         _         = Nothing

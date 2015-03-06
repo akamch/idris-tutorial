@@ -12,7 +12,6 @@ The Idris Community
 :stylesheet: idris-tutorial.css
 :toc:
 :version: 0.9.16
-//:cons: x :: xs
 
 include::intro.adoc[]
 

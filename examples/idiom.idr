@@ -19,7 +19,7 @@ instance Functor Eval where
 instance Applicative Eval where
     pure x = MkEval (\e => Just x)
 
-    (<$>) (MkEval f) (MkEval g) = MkEval (\x => app (f x) (g x)) where
+    (<*>) (MkEval f) (MkEval g) = MkEval (\x => app (f x) (g x)) where
        app : Maybe (a -> b) -> Maybe a -> Maybe b
        app (Just fx) (Just gx) = Just (fx gx)
        app _         _         = Nothing
@@ -35,4 +35,3 @@ runEval env e = case eval e of
 
 m_add' : Maybe Int -> Maybe Int -> Maybe Int
 m_add' x y = [| x + y |]
-

@@ -551,7 +551,9 @@ You’ll find these examples in `usefultypes.idr` in the `examples/` directory.
 For more details of the functions available on `List` and `Vect`, look in the library files:
 
 * `libs/prelude/Prelude/List.idr`
-* `libs/prelude/Prelude/Vect.idr`
+* `libs/base/Data/List.idr`
+* `libs/base/Data/Vect.idr`
+* `libs/base/Data/VectType.idr`
 
 Functions include filtering, appending, reversing, and so on.
 Also remember that [logo]#Idris# is still in development, so if you don’t see the function you need, please feel free to add it and submit a patch!
