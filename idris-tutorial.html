@@ -998,7 +998,13 @@ For more details of the functions available on <code>List</code> and <code>Vect<
 <p><code>libs/prelude/Prelude/List.idr</code></p>
 </li>
 <li>
-<p><code>libs/prelude/Prelude/Vect.idr</code></p>
+<p><code>libs/base/Data/List.idr</code></p>
+</li>
+<li>
+<p><code>libs/base/Data/Vect.idr</code></p>
+</li>
+<li>
+<p><code>libs/base/Data/VectType.idr</code></p>
 </li>
 </ul>
 </div>
@@ -1586,11 +1592,11 @@ For example, the <code>Functor</code> class is defined in the library:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>infixl 2 &lt;$&gt;
+<pre>infixl 2 &lt;*&gt;
 
 class Functor f =&gt; Applicative (f : Type -&gt; Type) where
     pure  : a -&gt; f a
-    (&lt;$&gt;) : f (a -&gt; b) -&gt; f a -&gt; f b</pre>
+    (&lt;*&gt;) : f (a -&gt; b) -&gt; f a -&gt; f b</pre>
 </div>
 </div>
 </div>
@@ -1786,19 +1792,19 @@ m_add' x y = m_app (m_app (Just (+)) x) y</pre>
 </div>
 <div class="paragraph">
 <p>Rather than having to insert <code>m_app</code> everywhere there is an application, we can use to do the job for us.
-To do this, we can make <code>Maybe</code> an instance of <code>Applicative</code> as follows, where <code>&lt;$&gt;</code> is defined in the same way as <code>m_app</code> above (this is defined in the <span class="logo">Idris</span> library):</p>
+To do this, we can make <code>Maybe</code> an instance of <code>Applicative</code> as follows, where <code>&lt;*&gt;</code> is defined in the same way as <code>m_app</code> above (this is defined in the <span class="logo">Idris</span> library):</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre>instance Applicative Maybe where
     pure = Just
 
-    (Just f) &lt;$&gt; (Just a) = Just (f a)
-    _        &lt;$&gt; _        = Nothing</pre>
+    (Just f) &lt;*&gt; (Just a) = Just (f a)
+    _        &lt;*&gt; _        = Nothing</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Using <em>idiom brackets</em> we can use this instance as follows, where a function application <code>[| f a1 ...an |]</code> is translated into <code>pure f &lt;$&gt; a1 &lt;$&gt; ...&lt;$&gt; an</code>:</p>
+<p>Using <em>idiom brackets</em> we can use this instance as follows, where a function application <code>[| f a1 ...an |]</code> is translated into <code>pure f &lt;*&gt; a1 &lt;*&gt; ...&lt;*&gt; an</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1856,7 +1862,7 @@ Before <code>Eval</code> can be an instance of <code>Applicative</code> it is ne
 instance Applicative Eval where
     pure x = MkEval (\e =&gt; Just x)
 
-    (&lt;$&gt;) (MkEval f) (MkEval g) = MkEval (\x =&gt; app (f x) (g x)) where
+    (&lt;*&gt;) (MkEval f) (MkEval g) = MkEval (\x =&gt; app (f x) (g x)) where
         app : Maybe (a -&gt; b) -&gt; Maybe a -&gt; Maybe b
         app (Just fx) (Just gx) = Just (fx gx)
         app _         _         = Nothing</pre>
@@ -3608,7 +3614,7 @@ In this section we describe two ways of extending the syntax: <code>syntax</code
 <h3 id="syntax-rules"><code>syntax</code> rules</h3>
 <div class="paragraph">
 <p>We have seen <code>if...then...else</code> expressions, but these are not built in.
-Instead, we can define a function in the prelude as follows (we have already seen this function in Section <a href="#sect:lazy">Laziness</a>:</p>
+Instead, we can define a function in the prelude as follows (we have already seen this function in <a href="#sect:lazy">Laziness</a>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -3707,7 +3713,7 @@ We have also put <code>“in”</code> in quotation marks since it is already a 
 <div class="sect2">
 <h3 id="dsl-notation"><code>dsl</code> notation</h3>
 <div class="paragraph">
-<p>The well-typed interpreter in Section <a href="#sect:interp">Example: The Well-Typed Interpreter</a> is a simple example of a common programming pattern with dependent types.
+<p>The well-typed interpreter in <a href="#sect:interp">Example: The Well-Typed Interpreter</a> is a simple example of a common programming pattern with dependent types.
 Namely: describe an <em>object language</em> and its type system with dependent types to guarantee that only well-typed programs can be represented, then program using that representation.
 Using this approach we can, for example, write programs for serialising binary data <a href="#plpv11">[plpv11]</a> or running concurrent processes safely <a href="#cbconc-fi">[cbconc-fi]</a>.</p>
 </div>
@@ -3728,17 +3734,21 @@ fact = Lam (If (Op (==) (Var Stop) (Val 0))
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>dsl expr
-    lambda      = Lam
+<pre>mkLam : TTName -&gt; Expr (t::g) t' -&gt; Expr g (TyFun t t')
+mkLam _ body = Lam body')'
+
+dsl expr
     variable    = Var
     index_first = Stop
-    index_next  = Pop</pre>
+    index_next  = Pop
+    lambda      = mkLam</pre>
 </div>
 </div>
 <div class="paragraph">
 <p>A <code>dsl</code> block describes how each syntactic construct is represented in an object language.
-Here, in the <code>expr</code> language, any Idris lambda is translated to a <code>Lam</code> constructor; any variable is translated to the <code>Var</code> constructor, using <code>Pop</code> and <code>Stop</code> to construct the de Bruijn index (i.e., to count how many bindings since the variable itself was bound).
-It is also possible to overload <code>let</code> in this way.
+Here, in the <code>expr</code> language, any variable is translated to the <code>Var</code> constructor, using <code>Pop</code> and <code>Stop</code> to construct the de Bruijn index (i.e., to count how many bindings since the variable itself was bound); and any Idris lambda is translated to a <code>Lam</code> constructor.
+The <code>mkLam</code> function simply ignores its first argument, which is the name that the user chose for the variable.
+It is also possible to overload <code>let</code> and dependent function syntax (<code>pi</code>) in this way.
 We can now write <code>fact</code> as follows:</p>
 </div>
 <div class="listingblock">
@@ -3754,15 +3764,15 @@ We can take this further, using idiom brackets, by declaring:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>(&lt;$&gt;) : |(f : Expr G (TyFun a t)) -&gt; Expr G a -&gt; Expr G t
-(&lt;$&gt;) = \f, a =&gt; App f a
+<pre>(&lt;$&gt;) : (f : Lazy (Expr G (TyFun a t))) -&gt; Expr G a -&gt; Expr G t
+(&lt;$&gt;) f a = App f a
 
 pure : Expr G a -&gt; Expr G a
 pure = id</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Note that there is no need for these to be part of an instance of <code>Applicative</code>, since idiom bracket notation translates directly to the names <code>&lt;$&gt;</code> and <code>pure</code>, and ad-hoc type-directed overloading is allowed.
+<p>Note that there is no need for these to be part of an instance of <code>Applicative</code>, since idiom bracket notation translates directly to the names <code>&lt;*&gt;</code> and <code>pure</code>, and ad-hoc type-directed overloading is allowed.
 We can now say:</p>
 </div>
 <div class="listingblock">
@@ -4493,7 +4503,7 @@ A reprint of an unpublished manuscript from 1969.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2015-01-22 17:01:00 MSK
+Last updated 2015-03-06 16:54:44 MSK
 </div>
 </div>
 </body>
