@@ -1,5 +1,7 @@
 = Idris tutorial
 
+*Deprecated*, current version at http://www.github.com/idris-lang/Idris-dev.
+
 View the tutorial in
 http://akamch.github.io/idris-tutorial/idris-tutorial.html[HTML],
 http://akamch.github.io/idris-tutorial/idris-tutorial.epub[EPUB],
